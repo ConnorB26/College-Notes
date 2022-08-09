@@ -1,4 +1,4 @@
-package com.plcoding.cleanarchitecturenoteapp.ui.theme
+package com.connorb26.notesapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

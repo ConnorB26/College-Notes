@@ -1,4 +1,4 @@
-package com.plcoding.cleanarchitecturenoteapp.ui.theme
+package com.connorb26.notesapp.ui.theme
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -14,7 +14,7 @@ private val DarkColorPalette = darkColors(
 )
 
 @Composable
-fun CleanArchitectureNoteAppTheme(darkTheme: Boolean = true, content: @Composable() () -> Unit) {
+fun NotesAppTheme(darkTheme: Boolean = true, content: @Composable() () -> Unit) {
     MaterialTheme(
         colors = DarkColorPalette,
         typography = Typography,
