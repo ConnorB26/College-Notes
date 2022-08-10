@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.connorb26.notesapp.feature_note.presentation.add_edit_note.AddEditNoteScreen
+import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.ui.theme.NotesAppTheme
@@ -32,6 +33,9 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(route = Screen.NotesScreen.route) {
                             NotesScreen(navController = navController)
+                        }
+                        composable(route = Screen.CalendarScreen.route) {
+                            CalendarScreen(navController = navController)
                         }
                         composable(
                             route = Screen.AddEditNoteScreen.route +

@@ -1,6 +1,8 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -8,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
@@ -53,20 +57,6 @@ fun AddEditNoteScreen(
 
     val scope = rememberCoroutineScope()
 
-    /*val backListener = object: NavController.OnDestinationChangedListener {
-            override fun onDestinationChanged(
-                controller: NavController,
-                destination: NavDestination,
-                arguments: Bundle?
-            ) {
-                if (destination.route == Screen.NotesScreen.route) {
-                    viewModel.onEvent(AddEditNoteEvent.SaveNote)
-                    navController.removeOnDestinationChangedListener(this)
-                }
-            }
-        }
-        navController.addOnDestinationChangedListener(backListener)*/
-
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when(event) {
@@ -75,8 +65,15 @@ fun AddEditNoteScreen(
                         message = event.message
                     )
                 }
+                is AddEditNoteViewModel.UiEvent.NavigateUp -> {
+                    navController.navigateUp()
+                }
             }
         }
+    }
+
+    BackHandler {
+        viewModel.onEvent(AddEditNoteEvent.SaveNote)
     }
 
     Scaffold(
@@ -95,8 +92,8 @@ fun AddEditNoteScreen(
             ) {
                 IconButton(
                     onClick = {
+                        //navController.navigateUp()
                         viewModel.onEvent(AddEditNoteEvent.SaveNote)
-                        navController.navigateUp()
                     },
                     modifier = Modifier.offset((-15).dp)
                 ) {
@@ -107,6 +104,30 @@ fun AddEditNoteScreen(
                         modifier = Modifier.size(35.dp)
                     )
                 }
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(0.8f)
+                ) {
+                    BasicTextField(
+                        value = titleState.text,
+                        onValueChange = {
+                            viewModel.onEvent(AddEditNoteEvent.EnteredTitle(it))
+                        },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.h5,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged {
+                                viewModel.onEvent(AddEditNoteEvent.ChangeTitleFocus(it))
+                            }
+                    )
+                    if(titleState.isHintVisible) {
+                        Text(text = titleState.hint, style = MaterialTheme.typography.h5, color = Color.DarkGray)
+                    }
+                }
+
+                Spacer(Modifier.weight(1f))
+
                 IconButton(
                     onClick = {
                         viewModel.onEvent(AddEditNoteEvent.ToggleColorSection)
@@ -163,7 +184,7 @@ fun AddEditNoteScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            /*Spacer(modifier = Modifier.height(4.dp))
             TransparentHintTextField(
                 text = titleState.text,
                 hint = titleState.hint,
@@ -176,7 +197,7 @@ fun AddEditNoteScreen(
                 isHintVisible = titleState.isHintVisible,
                 singleLine = true,
                 textStyle = MaterialTheme.typography.h5
-            )
+            )*/
             Spacer(modifier = Modifier.height(16.dp))
             TransparentHintTextField(
                 text = contentState.text,

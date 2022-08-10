@@ -112,7 +112,7 @@ class AddEditNoteViewModel @Inject constructor(
                                 id = currentNoteId
                             )
                         )
-                        Log.d("NOTE", "Added note")
+                        _eventFlow.emit(UiEvent.NavigateUp)
                     } catch(e: InvalidNoteException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
@@ -127,5 +127,6 @@ class AddEditNoteViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
+        object NavigateUp: UiEvent()
     }
 }
