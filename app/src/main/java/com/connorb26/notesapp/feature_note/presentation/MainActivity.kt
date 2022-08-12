@@ -1,30 +1,42 @@
 package com.connorb26.notesapp.feature_note.presentation
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.provider.CalendarContract
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
-import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.navArgument
 import com.connorb26.notesapp.feature_note.presentation.add_edit_note.AddEditNoteScreen
 import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.NotesAppTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
+@OptIn(ExperimentalAnimationApi::class)
+@RequiresApi(Build.VERSION_CODES.M)
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalAnimationApi::class)
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 42)
+        window.navigationBarColor = DarkGray.toArgb()
         setContent {
             NotesAppTheme {
                 Surface(

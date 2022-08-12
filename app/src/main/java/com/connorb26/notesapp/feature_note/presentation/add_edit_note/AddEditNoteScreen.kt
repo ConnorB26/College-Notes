@@ -93,16 +93,15 @@ fun AddEditNoteScreen(
             ) {
                 IconButton(
                     onClick = {
-                        //navController.navigateUp()
                         viewModel.onEvent(AddEditNoteEvent.SaveNote)
                     },
                     modifier = Modifier.offset((-15).dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ChevronLeft,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = MaterialTheme.colors.onSurface,
-                        modifier = Modifier.size(35.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
