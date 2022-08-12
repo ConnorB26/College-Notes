@@ -1,5 +1,6 @@
 package com.connorb26.notesapp.feature_note.presentation.calendar
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Intent
@@ -9,7 +10,6 @@ import android.icu.util.Calendar
 import android.net.Uri
 import android.os.Build
 import android.provider.CalendarContract
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.widget.CalendarView
 import androidx.annotation.RequiresApi
@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -33,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.presentation.calendar.components.EventItem
-
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -52,21 +50,29 @@ fun CalendarScreen(
 
     val calendar = Calendar.getInstance()
     val dateFormat = SimpleDateFormat("MM/dd/yyyy")
+    val projection = arrayOf(
+        CalendarContract.Instances.EVENT_ID,
+        CalendarContract.Instances.TITLE,
+        CalendarContract.Instances.DESCRIPTION,
+        CalendarContract.Instances.DTSTART,
+        CalendarContract.Instances.DTEND,
+        CalendarContract.Instances.ALL_DAY,
+        CalendarContract.Instances.EVENT_LOCATION
+    )
 
     LaunchedEffect(key1 = true) {
         date = dateFormat.format(calendar.time)
-        val projection = arrayOf(
-            "title",
-            "description",
-            "dtstart",
-            "dtend",
-            "allDay",
-            "eventLocation"
-        )
-        val selectionClause = CalendarContract.Instances.DTSTART + " >= ? AND " + CalendarContract.Instances.DTSTART + "<= ?";
-        val selectionsArgs = arrayOf(calendar.timeInMillis.toString(), (calendar.timeInMillis + 86400000).toString())
-        val cursor: Cursor? = contentResolver.query(CalendarContract.Events.CONTENT_URI, projection, selectionClause, selectionsArgs, null)
 
+        val startTime: Calendar = Calendar.getInstance()
+        startTime.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0)
+        val endTime: Calendar = Calendar.getInstance()
+        endTime.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 23, 59, 59)
+
+        val eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+        ContentUris.appendId(eventsUriBuilder, startTime.timeInMillis)
+        ContentUris.appendId(eventsUriBuilder, endTime.timeInMillis)
+        val eventsUri = eventsUriBuilder.build()
+        val cursor: Cursor? = contentResolver.query(eventsUri, projection, null, null, CalendarContract.Instances.DTSTART + " ASC")
         viewModel.onEvent(CalendarEvent.UpdateDayEvents(cursor))
     }
 
@@ -105,8 +111,9 @@ fun CalendarScreen(
                     IconButton(
                         onClick = {
                             viewModel.onEvent(CalendarEvent.AddEvent)
+                            val uri: Uri = CalendarContract.Events.CONTENT_URI
                             context.startActivity(Intent(Intent.ACTION_INSERT)
-                                .setData(CalendarContract.Events.CONTENT_URI)
+                                .setData(uri)
                                 .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, calendar.timeInMillis)
                                 .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, calendar.timeInMillis + 3600000)
                             )
@@ -138,23 +145,20 @@ fun CalendarScreen(
                             CalendarView(ContextThemeWrapper(context, R.style.Theme_NotesCalendar))
                         },
                         update = {
-                            it.setOnDateChangeListener { calendarView, year, month, day ->
+                            it.setOnDateChangeListener { _, year, month, day ->
                                 calendar.set(year,month,day,0,0,0)
                                 date = dateFormat.format(calendar.time)
 
-                                val projection = arrayOf(
-                                    "_id",
-                                    "title",
-                                    "description",
-                                    "dtstart",
-                                    "dtend",
-                                    "allDay",
-                                    "eventLocation"
-                                )
-                                val selectionClause = CalendarContract.Instances.DTSTART + " >= ? AND " + CalendarContract.Instances.DTSTART + "<= ?";
-                                val selectionsArgs = arrayOf(calendar.timeInMillis.toString(), (calendar.timeInMillis + 86400000).toString())
-                                val cursor: Cursor? = contentResolver.query(CalendarContract.Events.CONTENT_URI, projection, selectionClause, selectionsArgs, null)
+                                val startTime: Calendar = Calendar.getInstance()
+                                startTime.set(year, month, day, 0, 0, 0)
+                                val endTime: Calendar = Calendar.getInstance()
+                                endTime.set(year, month, day, 23, 59, 59)
 
+                                val eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+                                ContentUris.appendId(eventsUriBuilder, startTime.timeInMillis)
+                                ContentUris.appendId(eventsUriBuilder, endTime.timeInMillis)
+                                val eventsUri = eventsUriBuilder.build()
+                                val cursor: Cursor? = contentResolver.query(eventsUri, projection, null, null, CalendarContract.Instances.DTSTART + " ASC")
                                 viewModel.onEvent(CalendarEvent.UpdateDayEvents(cursor))
                             }
                         }

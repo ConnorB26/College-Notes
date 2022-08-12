@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -21,6 +22,7 @@ import com.connorb26.notesapp.feature_note.presentation.add_edit_note.AddEditNot
 import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.ui.theme.Blue
 import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.NotesAppTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         requestPermissions(arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 42)
         window.navigationBarColor = DarkGray.toArgb()
+        window.statusBarColor = DarkGray.toArgb()
         setContent {
             NotesAppTheme {
                 Surface(
@@ -52,11 +55,17 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(
                             route = Screen.CalendarScreen.route,
-                            enterTransition = { _, _ ->
-                                slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                            enterTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.CalendarScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                    else -> null
+                                }
                             },
-                            exitTransition = { _, _ ->
-                                slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500))
+                            exitTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.NotesScreen.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500))
+                                    else -> null
+                                }
                             }
                         ) {
                             CalendarScreen(navController = navController)
@@ -78,11 +87,17 @@ class MainActivity : ComponentActivity() {
                                     defaultValue = -1
                                 },
                             ),
-                            enterTransition = { _, _ ->
-                                slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                            enterTransition = {
+                                when(initialState.destination.route) {
+                                    Screen.NotesScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                    else -> null
+                                }
                             },
-                            exitTransition = { _, _ ->
-                                slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500))
+                            exitTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.NotesScreen.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500))
+                                    else -> null
+                                }
                             }
                         ) {
                             val color = it.arguments?.getInt("noteColor") ?: -1

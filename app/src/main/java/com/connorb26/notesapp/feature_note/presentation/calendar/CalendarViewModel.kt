@@ -27,18 +27,20 @@ class CalendarViewModel @Inject constructor(
             is CalendarEvent.UpdateDayEvents -> {
                 var events: MutableList<Event> = arrayListOf()
                 val c: Cursor = event.cursor!!
-                while(c.moveToNext()) {
-                    events.add(
-                        Event(
-                        c.getLong(0),
-                        c.getString(1),
-                        c.getString(2),
-                        c.getLong(3),
-                        c.getLong(4),
-                        c.getInt(5) == 1,
-                        c.getString(6)
+                if(c.moveToFirst()) {
+                    do {
+                        events.add(
+                            Event(
+                                c.getLong(0),
+                                c.getString(1),
+                                c.getString(2),
+                                c.getLong(3),
+                                c.getLong(4),
+                                c.getInt(5) == 1,
+                                c.getString(6)
+                            )
                         )
-                    )
+                    } while(c.moveToNext())
                 }
                 _state.value = state.value.copy(
                     events = events

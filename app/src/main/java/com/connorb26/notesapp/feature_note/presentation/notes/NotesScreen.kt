@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,9 +23,10 @@ import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.presentation.notes.components.NoteItem
 import com.connorb26.notesapp.feature_note.presentation.notes.components.OrderSection
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.ui.theme.DarkGray
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NotesScreen(
     navController: NavController,
@@ -33,7 +35,7 @@ fun NotesScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
-    
+
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(onClick = {
