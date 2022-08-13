@@ -32,12 +32,12 @@ class CalendarViewModel @Inject constructor(
                         events.add(
                             Event(
                                 c.getLong(0),
-                                c.getString(1),
-                                c.getString(2),
+                                if (c.getString(1) == null) "" else c.getString(1),
+                                if (c.getString(2) == null) "" else c.getString(2),
                                 c.getLong(3),
                                 c.getLong(4),
                                 c.getInt(5) == 1,
-                                c.getString(6)
+                                if (c.getString(6) == null) "" else c.getString(6)
                             )
                         )
                     } while(c.moveToNext())

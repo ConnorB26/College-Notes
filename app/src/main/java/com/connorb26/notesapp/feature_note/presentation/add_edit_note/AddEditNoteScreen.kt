@@ -1,5 +1,9 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
+import android.content.ContentUris
+import android.database.Cursor
+import android.icu.util.Calendar
+import android.provider.CalendarContract
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -18,11 +22,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
 import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.TransparentHintTextField
+import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarEvent
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -44,6 +53,15 @@ fun AddEditNoteScreen(
         Animatable(
             Color(if(noteColor != -1) noteColor else viewModel.noteColor.value)
         )
+    }
+
+    OnLifecycleEvent { _, event ->
+        when (event) {
+            Lifecycle.Event.ON_PAUSE -> {
+                viewModel.onEvent(AddEditNoteEvent.SaveNote)
+            }
+            else -> {}
+        }
     }
 
     LaunchedEffect(key1 = true) {
@@ -181,6 +199,24 @@ fun AddEditNoteScreen(
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier.fillMaxHeight()
             )
+        }
+    }
+}
+
+@Composable
+fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
+    val eventHandler = rememberUpdatedState(onEvent)
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+
+    DisposableEffect(lifecycleOwner.value) {
+        val lifecycle = lifecycleOwner.value.lifecycle
+        val observer = LifecycleEventObserver { owner, event ->
+            eventHandler.value(owner, event)
+        }
+
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
         }
     }
 }
