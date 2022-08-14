@@ -36,7 +36,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.R
+import com.connorb26.notesapp.di.AppModule.provideCalendarUseCases
+import com.connorb26.notesapp.feature_note.domain.use_case.CalendarUseCases
 import com.connorb26.notesapp.feature_note.presentation.calendar.components.EventItem
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -47,20 +50,10 @@ fun CalendarScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
-    val contentResolver: ContentResolver = context.contentResolver
 
     var date by remember { mutableStateOf("") }
     val dateFormat = SimpleDateFormat("MM/dd/yyyy")
     val calendar = Calendar.getInstance()
-    val projection = arrayOf(
-        CalendarContract.Instances.EVENT_ID,
-        CalendarContract.Instances.TITLE,
-        CalendarContract.Instances.DESCRIPTION,
-        CalendarContract.Instances.DTSTART,
-        CalendarContract.Instances.DTEND,
-        CalendarContract.Instances.ALL_DAY,
-        CalendarContract.Instances.EVENT_LOCATION
-    )
 
     LaunchedEffect(key1 = true) {
         date = dateFormat.format(calendar.time)
@@ -69,42 +62,16 @@ fun CalendarScreen(
     OnLifecycleEvent { _, event ->
         when (event) {
             Lifecycle.Event.ON_RESUME -> {
-                val year: Int = date.substring(6).toInt()
-                val month: Int = date.substring(0,2).toInt()-1
-                val day: Int = date.substring(3,5).toInt()
-
-                val startTime: Calendar = Calendar.getInstance()
-                startTime.set(year, month, day, 0, 0, 0)
-                val endTime: Calendar = Calendar.getInstance()
-                endTime.set(year, month, day , 23, 59, 59)
-
-                val eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
-                ContentUris.appendId(eventsUriBuilder, startTime.timeInMillis)
-                ContentUris.appendId(eventsUriBuilder, endTime.timeInMillis)
-                val eventsUri = eventsUriBuilder.build()
-                val cursor: Cursor? = contentResolver.query(eventsUri, projection, null, null, CalendarContract.Instances.DTSTART + " ASC")
-                viewModel.onEvent(CalendarEvent.UpdateDayEvents(cursor))
+                val dateInfo: Map<String, Int> = getDateVals(date)
+                viewModel.onEvent(CalendarEvent.UpdateDayEvents(dateInfo["Year"]!!, dateInfo["Month"]!!, dateInfo["Day"]!!))
             }
             else -> { }
         }
     }
 
     LaunchedEffect(key1 = date) {
-        val year: Int = date.substring(6).toInt()
-        val month: Int = date.substring(0,2).toInt()-1
-        val day: Int = date.substring(3,5).toInt()
-
-        val startTime: Calendar = Calendar.getInstance()
-        startTime.set(year, month, day, 0, 0, 0)
-        val endTime: Calendar = Calendar.getInstance()
-        endTime.set(year, month, day , 23, 59, 59)
-
-        val eventsUriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
-        ContentUris.appendId(eventsUriBuilder, startTime.timeInMillis)
-        ContentUris.appendId(eventsUriBuilder, endTime.timeInMillis)
-        val eventsUri = eventsUriBuilder.build()
-        val cursor: Cursor? = contentResolver.query(eventsUri, projection, null, null, CalendarContract.Instances.DTSTART + " ASC")
-        viewModel.onEvent(CalendarEvent.UpdateDayEvents(cursor))
+        val dateInfo: Map<String, Int> = getDateVals(date)
+        viewModel.onEvent(CalendarEvent.UpdateDayEvents(dateInfo["Year"]!!, dateInfo["Month"]!!, dateInfo["Day"]!!))
     }
 
     Scaffold(
@@ -141,13 +108,7 @@ fun CalendarScreen(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.onEvent(CalendarEvent.AddEvent)
-                            val uri: Uri = CalendarContract.Events.CONTENT_URI
-                            context.startActivity(Intent(Intent.ACTION_INSERT)
-                                .setData(uri)
-                                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, calendar.timeInMillis)
-                                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, calendar.timeInMillis + 3600000)
-                            )
+                            viewModel.onEvent(CalendarEvent.AddEvent(calendar.timeInMillis))
                         }
                     ) {
                         Icon(
@@ -200,14 +161,13 @@ fun CalendarScreen(
                     .padding(16.dp)
             ) {
                 items(state.events) { event ->
-                    val uri: Uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, event.id)
                     EventItem(
                         event = event,
                         onEditClick = {
-                            context.startActivity(Intent(Intent.ACTION_VIEW)
-                                .setData(uri)
-                            )
-                        }
+                            viewModel.onEvent(CalendarEvent.EditEvent(event.id))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -220,8 +180,15 @@ fun CalendarScreen(
     }
 }
 
+private fun getDateVals(date: String): Map<String, Int> {
+    val year: Int = date.substring(6).toInt()
+    val month: Int = date.substring(0,2).toInt()-1
+    val day: Int = date.substring(3,5).toInt()
+    return mapOf("Year" to year, "Month" to month, "Day" to day)
+}
+
 @Composable
-fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
+private fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
     val eventHandler = rememberUpdatedState(onEvent)
     val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
 

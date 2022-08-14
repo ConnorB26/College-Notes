@@ -41,4 +41,16 @@ object AppModule {
             getNote = GetNote(repository)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideCalendarUseCases(): CalendarUseCases {
+        return CalendarUseCases(
+            getEventsDay = GetEventsDay(),
+            getEventsRange = GetEventsRange(),
+            addEvent = AddEvent(),
+            addHW = AddHW(),
+            editEvent = EditEvent()
+        )
+    }
 }
