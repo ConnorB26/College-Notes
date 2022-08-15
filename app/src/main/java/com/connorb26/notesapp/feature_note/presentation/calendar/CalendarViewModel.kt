@@ -10,12 +10,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.connorb26.notesapp.feature_note.domain.model.Event
-import com.connorb26.notesapp.feature_note.domain.model.EventType
-import com.connorb26.notesapp.feature_note.domain.use_case.CalendarUseCases
-import dagger.hilt.android.internal.Contexts
+import com.connorb26.notesapp.feature_note.domain.use_case.calendar.CalendarUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.*
 import javax.inject.Inject
 
 

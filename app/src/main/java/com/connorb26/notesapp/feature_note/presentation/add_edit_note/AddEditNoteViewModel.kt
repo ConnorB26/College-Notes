@@ -1,19 +1,14 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
-import android.os.Bundle
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import com.connorb26.notesapp.feature_note.domain.model.InvalidNoteException
 import com.connorb26.notesapp.feature_note.domain.model.Note
-import com.connorb26.notesapp.feature_note.domain.use_case.NoteUseCases
-import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.feature_note.domain.use_case.notes.NoteUseCases
 import com.connorb26.notesapp.ui.theme.White
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -59,7 +54,7 @@ class AddEditNoteViewModel @Inject constructor(
                         )
                         _noteContent.value = noteContent.value.copy(
                             text = note.content,
-                            isHintVisible = false
+                            isHintVisible = noteContent.value.text.isBlank()
                         )
                         _noteColor.value = note.color
                     }

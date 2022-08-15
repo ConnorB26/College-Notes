@@ -1,4 +1,4 @@
-package com.connorb26.notesapp.feature_note.domain.use_case
+package com.connorb26.notesapp.feature_note.domain.use_case.notes
 
 import com.connorb26.notesapp.feature_note.domain.model.InvalidNoteException
 import com.connorb26.notesapp.feature_note.domain.model.Note

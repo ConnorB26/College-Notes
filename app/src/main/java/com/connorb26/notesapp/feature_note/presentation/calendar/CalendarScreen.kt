@@ -1,16 +1,8 @@
 package com.connorb26.notesapp.feature_note.presentation.calendar
 
-import android.annotation.SuppressLint
-import android.content.ContentResolver
-import android.content.ContentUris
-import android.content.Intent
-import android.database.Cursor
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.net.Uri
 import android.os.Build
-import android.provider.CalendarContract
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.widget.CalendarView
 import androidx.annotation.RequiresApi
@@ -36,10 +28,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.R
-import com.connorb26.notesapp.di.AppModule.provideCalendarUseCases
-import com.connorb26.notesapp.feature_note.domain.use_case.CalendarUseCases
 import com.connorb26.notesapp.feature_note.presentation.calendar.components.EventItem
-import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -106,6 +95,12 @@ fun CalendarScreen(
                             modifier = Modifier.size(30.dp)
                         )
                     }
+
+                    Text(
+                        text = "Calendar",
+                        style = MaterialTheme.typography.h5
+                    )
+
                     IconButton(
                         onClick = {
                             viewModel.onEvent(CalendarEvent.AddEvent(calendar.timeInMillis))

@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CalendarViewMonth
-import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,7 +40,10 @@ fun NotesScreen(
             },
             backgroundColor = MaterialTheme.colors.primary
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add note")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add note"
+                )
             }
         },
         scaffoldState = scaffoldState,
@@ -79,6 +79,17 @@ fun NotesScreen(
                     Icon(
                         imageVector = Icons.Default.CalendarToday,
                         contentDescription = "Calendar Screen"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        navController.navigate(Screen.ClassScreen.route)
+                    },
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Class,
+                        contentDescription = "Class Screen"
                     )
                 }
                 IconButton(

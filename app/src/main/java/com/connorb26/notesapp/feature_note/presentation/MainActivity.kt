@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.connorb26.notesapp.feature_note.presentation.add_edit_class.AddEditClassScreen
 import com.connorb26.notesapp.feature_note.presentation.add_edit_note.AddEditNoteScreen
 import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
+import com.connorb26.notesapp.feature_note.presentation.classes.ClassesScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.ui.theme.Blue
@@ -71,6 +73,23 @@ class MainActivity : ComponentActivity() {
                             CalendarScreen(navController = navController)
                         }
                         composable(
+                            route = Screen.ClassScreen.route,
+                            enterTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.ClassScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                    else -> null
+                                }
+                            },
+                            exitTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.NotesScreen.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(500))
+                                    else -> null
+                                }
+                            }
+                        ) {
+                            ClassesScreen(navController = navController)
+                        }
+                        composable(
                             route = Screen.AddEditNoteScreen.route +
                                     "?noteId={noteId}&noteColor={noteColor}",
                             arguments = listOf(
@@ -105,6 +124,32 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 noteColor = color
                             )
+                        }
+                        composable(
+                            route = Screen.AddEditClassScreen.route +
+                                    "?className={className}",
+                            arguments = listOf(
+                                navArgument(
+                                    name = "className"
+                                ) {
+                                    type = NavType.StringType
+                                    defaultValue = ""
+                                }
+                            ),
+                            enterTransition = {
+                                when(initialState.destination.route) {
+                                    Screen.ClassScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(500))
+                                    else -> null
+                                }
+                            },
+                            exitTransition = {
+                                when(targetState.destination.route) {
+                                    Screen.ClassScreen.route -> slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(500))
+                                    else -> null
+                                }
+                            }
+                        ) {
+                            AddEditClassScreen(navController = navController)
                         }
                     }
                 }

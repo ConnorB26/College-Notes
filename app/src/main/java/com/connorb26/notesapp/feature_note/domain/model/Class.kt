@@ -1,9 +1,14 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
+import android.icu.util.Calendar
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Class(
-    val name: String,
-    val department: String,
-    val number: Int,
-    val building: String,
-    val room: Int
+    @PrimaryKey val name: String,
+    val location: String,
+    val exams: Exams,
+    val classTimes: ClassTimes,
+    val homework: HomeworkList
 )

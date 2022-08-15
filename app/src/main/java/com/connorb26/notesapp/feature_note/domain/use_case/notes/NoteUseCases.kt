@@ -1,4 +1,4 @@
-package com.connorb26.notesapp.feature_note.domain.use_case
+package com.connorb26.notesapp.feature_note.domain.use_case.notes
 
 data class NoteUseCases(
     val getNotes: GetNotes,

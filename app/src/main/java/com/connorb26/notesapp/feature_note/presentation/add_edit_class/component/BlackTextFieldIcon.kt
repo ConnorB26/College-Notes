@@ -1,62 +1,67 @@
-package com.connorb26.notesapp.feature_note.presentation.add_edit_note.components
+package com.connorb26.notesapp.feature_note.presentation.add_edit_class.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.room.util.StringUtil
-import com.connorb26.notesapp.ui.theme.Green
+import com.connorb26.notesapp.ui.theme.LightGray
 
 @Composable
-fun TransparentHintTextField(
+fun BlackTextFieldIcon(
     text: String,
     hint: String,
     modifier: Modifier = Modifier,
-    isHintVisible: Boolean = true,
-    onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
-    onFocusChange: (FocusState) -> Unit
+    onValueChange: (String) -> Unit,
+    icon: ImageVector,
+    iconDesc: String
 ) {
     val customTextSelectionColors = TextSelectionColors(
-        handleColor = Green,
-        backgroundColor = Green.copy(alpha = 0.4f)
+        handleColor = LightGray,
+        backgroundColor = LightGray.copy(alpha = 0.4f)
     )
 
     Box(
         modifier = modifier
     ) {
         CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            BasicTextField(
+            TextField(
                 value = text,
                 onValueChange = onValueChange,
                 singleLine = singleLine,
-                textStyle = textStyle,
+                textStyle = textStyle.copy(color = Color.White),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .onFocusChanged {
-                        onFocusChange(it)
-                    },
+                    .background(Color.Black),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
                     autoCorrect = true
-                )
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = Color.White,
+                    backgroundColor = Color.Transparent,
+                    textColor = Color.White
+                ),
+                placeholder = { Text(text = hint, style = textStyle, color = Color.DarkGray) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = iconDesc,
+                        tint = Color.White
+                    )
+                }
             )
-        }
-        if(isHintVisible) {
-            //Text(text = hint, style = textStyle, color = Color.DarkGray)
         }
     }
 }

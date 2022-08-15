@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.connorb26.notesapp.feature_note.domain.model.Note
-import com.connorb26.notesapp.feature_note.domain.use_case.NoteUseCases
+import com.connorb26.notesapp.feature_note.domain.use_case.notes.NoteUseCases
 import com.connorb26.notesapp.feature_note.domain.util.NoteOrder
 import com.connorb26.notesapp.feature_note.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
