@@ -95,6 +95,12 @@ class AddEditNoteViewModel @Inject constructor(
             is AddEditNoteEvent.ChangeColor -> {
                 _noteColor.value = event.color
             }
+            is AddEditNoteEvent.SaveNoteAndNavigate -> {
+                viewModelScope.launch {
+                    onEvent(AddEditNoteEvent.SaveNote)
+                    _eventFlow.emit(UiEvent.NavigateUp)
+                }
+            }
             is AddEditNoteEvent.SaveNote -> {
                 viewModelScope.launch {
                     try {
@@ -107,7 +113,6 @@ class AddEditNoteViewModel @Inject constructor(
                                 id = currentNoteId
                             )
                         )
-                        _eventFlow.emit(UiEvent.NavigateUp)
                     } catch(e: InvalidNoteException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(

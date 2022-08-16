@@ -118,7 +118,7 @@ fun ClassesScreen(
                 Spacer(modifier = Modifier.height(1.dp))
             }
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 items(state.classes) { classObj ->
                     ClassItem(
                         classObj = classObj,

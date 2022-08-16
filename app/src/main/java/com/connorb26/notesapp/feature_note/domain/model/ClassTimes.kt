@@ -1,14 +1,13 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
 class ClassTimes(
+    var classTimes: List<ClassTime> = emptyList()
 ) {
-    private lateinit var classTimes: Map<String, Pair<Long, Long>>
-
-    fun addClassTime(dayOfWeek: String, startTime: Long, endTime: Long) {
-        classTimes = classTimes + Pair(dayOfWeek, Pair(startTime, endTime))
+    fun addClassTime(classTime: ClassTime) {
+        classTimes = classTimes + classTime
     }
 
-    fun clearDay(dayOfWeek: String) {
-        classTimes = classTimes - dayOfWeek
+    fun removeClassTime(classTime: ClassTime) {
+        classTimes = classTimes - classTime
     }
 }

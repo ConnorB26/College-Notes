@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class Class(
     @PrimaryKey val name: String,
     val location: String,
-    val exams: Exams,
     val classTimes: ClassTimes,
+    val exams: Exams,
     val homework: HomeworkList
 )

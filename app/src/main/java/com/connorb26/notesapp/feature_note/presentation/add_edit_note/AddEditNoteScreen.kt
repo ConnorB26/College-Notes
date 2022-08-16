@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
 import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.TransparentHintTextField
 import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarEvent
+import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -73,14 +74,14 @@ fun AddEditNoteScreen(
                     )
                 }
                 is AddEditNoteViewModel.UiEvent.NavigateUp -> {
-                    navController.navigateUp()
+                    navController.navigate(Screen.NotesScreen.route)
                 }
             }
         }
     }
 
     BackHandler {
-        viewModel.onEvent(AddEditNoteEvent.SaveNote)
+        viewModel.onEvent(AddEditNoteEvent.SaveNoteAndNavigate)
     }
 
     Scaffold(
@@ -99,7 +100,7 @@ fun AddEditNoteScreen(
             ) {
                 IconButton(
                     onClick = {
-                        viewModel.onEvent(AddEditNoteEvent.SaveNote)
+                        viewModel.onEvent(AddEditNoteEvent.SaveNoteAndNavigate)
                     },
                     modifier = Modifier.offset((-15).dp)
                 ) {

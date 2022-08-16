@@ -1,14 +1,13 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
 class Exams(
+    var exams: List<Exam> = emptyList()
 ) {
-    private lateinit var exams: Map<String, String>
-
-    fun addExam(name: String, date: String) {
-        exams = exams + Pair(name, date)
+    fun addExam(exam: Exam) {
+        exams = exams + exam
     }
 
-    fun removeExam(name: String) {
-        exams = exams - name
+    fun removeExam(exam: Exam) {
+        exams = exams - exam
     }
 }

@@ -1,9 +1,8 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
 class HomeworkList(
+    var homework: List<Homework> = emptyList()
 ) {
-    private lateinit var homework: List<Homework>
-
     fun addHomework(hw: Homework) {
         homework = homework + hw
     }

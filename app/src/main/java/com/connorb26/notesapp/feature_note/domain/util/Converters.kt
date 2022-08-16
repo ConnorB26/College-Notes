@@ -1,6 +1,7 @@
 package com.connorb26.notesapp.feature_note.domain.util
 
 import androidx.room.TypeConverter
+import com.connorb26.notesapp.feature_note.domain.model.Class
 import com.connorb26.notesapp.feature_note.domain.model.ClassTimes
 import com.connorb26.notesapp.feature_note.domain.model.Exams
 import com.connorb26.notesapp.feature_note.domain.model.HomeworkList

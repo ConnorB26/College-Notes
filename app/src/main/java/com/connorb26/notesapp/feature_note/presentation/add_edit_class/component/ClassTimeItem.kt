@@ -2,98 +2,149 @@ package com.connorb26.notesapp.feature_note.presentation.add_edit_class.componen
 
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.connorb26.notesapp.R
+import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ClassTimeItem() {
-    val dayOptions = listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-    var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf("") }
-
+fun ClassTimeItem(
+    startTimeValue: TimeHolder? = null,
+    endTimeValue: TimeHolder? = null,
+    selectedDay: String? = null,
+    onDayValueChange: (String) -> Unit,
+    onStartTimeValueChange: (TimeHolder) -> Unit,
+    onEndTimeValueChange: (TimeHolder) -> Unit
+) {
     val context = LocalContext.current
+
+    val dayOptions = listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+    var dayExpanded by remember { mutableStateOf(false) }
+    var selectedDayText by remember { mutableStateOf(selectedDay ?: "") }
 
     val calendar = Calendar.getInstance()
     val hour = calendar[Calendar.HOUR_OF_DAY]
     val minute = calendar[Calendar.MINUTE]
 
-    val startTime = remember { mutableStateOf("") }
-    val endTime = remember { mutableStateOf("") }
+    val startTimeHolderDefault = "Start Time"
+    val startTimeHolder = remember { mutableStateOf(startTimeValue ?: TimeHolder(default = startTimeHolderDefault)) }
+    val endTimeHolderDefault = "End Time"
+    val endTimeHolder = remember { mutableStateOf(endTimeValue ?: TimeHolder(default = endTimeHolderDefault)) }
 
     val startTimePickerDialog = TimePickerDialog(
         context,
+        R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
-            startTime.value = "$hour:$minute"
+            startTimeHolder.value = TimeHolder(
+                hour = (if(hour - 12 <= 0) hour else (hour - 12)).toString(),
+                minute = if(minute / 10 < 1) "0$minute" else minute.toString(),
+                ampm = if(hour - 12 < 0) "AM" else "PM"
+            )
+            onStartTimeValueChange(startTimeHolder.value)
         }, hour, minute, false
     )
 
     val endTimePickerDialog = TimePickerDialog(
         context,
+        R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
-            endTime.value = "$hour:$minute"
+            endTimeHolder.value = TimeHolder(
+                hour = (if(hour - 12 <= 0) hour else (hour - 12)).toString(),
+                minute = if(minute / 10 < 1) "0$minute" else minute.toString(),
+                ampm = if(hour - 12 < 0) "AM" else "PM"
+            )
+            onEndTimeValueChange(endTimeHolder.value)
         }, hour, minute, false
     )
 
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         ExposedDropdownMenuBox(
-            expanded = expanded,
+            expanded = dayExpanded,
             onExpandedChange = {
-                expanded = !expanded
-            }
+                dayExpanded = !dayExpanded
+            },
+            modifier = Modifier
+                .weight(0.9f)
         ) {
             TextField(
                 readOnly = true,
-                value = selectedOptionText,
+                value = if(selectedDayText.length >= 3) selectedDayText.substring(0,3) else "",
                 onValueChange = { },
-                placeholder = { Text("Day of Week") },
+                placeholder = { Text(text = "Day", color = Color.DarkGray, textAlign = TextAlign.Center) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = expanded
+                        expanded = dayExpanded
                     )
                 },
-                colors = ExposedDropdownMenuDefaults.textFieldColors()
+                colors = ExposedDropdownMenuDefaults.textFieldColors(backgroundColor = Color.Black),
+                shape = RectangleShape,
+                modifier = Modifier
+                    .height(50.dp)
             )
             ExposedDropdownMenu(
-                expanded = expanded,
+                expanded = dayExpanded,
                 onDismissRequest = {
-                    expanded = false
+                    dayExpanded = false
                 }
             ) {
                 dayOptions.forEach { selectionOption ->
+                    val opt: String = selectionOption.substring(0, 3)
                     DropdownMenuItem(
                         onClick = {
-                            selectedOptionText = selectionOption
-                            expanded = false
+                            selectedDayText = opt
+                            dayExpanded = false
+                            onDayValueChange(selectedDayText)
                         }
                     ) {
-                        Text(text = selectionOption)
+                        Text(text = opt)
                     }
                 }
             }
         }
 
         Button(
-            onClick = { startTimePickerDialog.show() }
+            onClick = { startTimePickerDialog.show() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+            shape = RectangleShape,
+            modifier = Modifier
+                .height(50.dp)
+                .weight(1f)
         ) {
-            Text(text = startTime.value)
+            Text(
+                text = startTimeHolder.value.toString(),
+                color = if (startTimeHolder.value.toString() == startTimeHolderDefault) Color.DarkGray else Color.White,
+                textAlign = TextAlign.Center
+            )
         }
 
         Button(
-            onClick = { endTimePickerDialog.show() }
+            onClick = { endTimePickerDialog.show() },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
+            shape = RectangleShape,
+            modifier = Modifier
+                .height(50.dp)
+                .weight(1f)
         ) {
-            Text(text = endTime.value)
+            Text(
+                text = endTimeHolder.value.toString(),
+                color = if (endTimeHolder.value.toString() == endTimeHolderDefault) Color.DarkGray else Color.White,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }

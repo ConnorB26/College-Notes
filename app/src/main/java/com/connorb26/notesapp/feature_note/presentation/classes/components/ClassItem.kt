@@ -3,12 +3,15 @@ package com.connorb26.notesapp.feature_note.presentation.classes.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.connorb26.notesapp.feature_note.domain.model.Class
 
 @Composable
@@ -19,16 +22,18 @@ fun ClassItem(
 ) {
     Card(
         modifier = modifier,
-        backgroundColor = Color.LightGray
+        backgroundColor = Color.Black
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = classObj.name,
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(16.dp)
             )
 
             IconButton(
@@ -36,8 +41,8 @@ fun ClassItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete note",
-                    tint = MaterialTheme.colors.onSurface
+                    contentDescription = "Delete Class",
+                    tint = MaterialTheme.colors.primary
                 )
             }
         }

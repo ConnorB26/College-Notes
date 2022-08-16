@@ -30,7 +30,7 @@ fun BlackTextField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String) -> Unit
 ) {
     val customTextSelectionColors = TextSelectionColors(
         handleColor = LightGray,
