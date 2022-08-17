@@ -7,8 +7,9 @@ import androidx.room.PrimaryKey
 @Entity
 data class Class(
     @PrimaryKey val name: String,
-    val location: String,
     val classTimes: ClassTimes,
     val exams: Exams,
-    val homework: HomeworkList
+    val homework: HomeworkList,
+    val firstDay: DateHolder,
+    val lastDay: DateHolder
 )

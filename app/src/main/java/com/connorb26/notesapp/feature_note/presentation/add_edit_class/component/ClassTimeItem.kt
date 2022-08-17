@@ -3,28 +3,43 @@ package com.connorb26.notesapp.feature_note.presentation.add_edit_class.componen
 import android.app.TimePickerDialog
 import android.icu.util.Calendar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Title
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
+import com.connorb26.notesapp.feature_note.presentation.add_edit_class.AddEditClassEvent
+import com.connorb26.notesapp.ui.theme.Blue
+import com.connorb26.notesapp.ui.theme.DarkGray
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ClassTimeItem(
     startTimeValue: TimeHolder? = null,
     endTimeValue: TimeHolder? = null,
     selectedDay: String? = null,
+    locationValue: String? = null,
     onDayValueChange: (String) -> Unit,
     onStartTimeValueChange: (TimeHolder) -> Unit,
-    onEndTimeValueChange: (TimeHolder) -> Unit
+    onEndTimeValueChange: (TimeHolder) -> Unit,
+    onLocationValueChange: (String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -33,25 +48,38 @@ fun ClassTimeItem(
     var selectedDayText by remember { mutableStateOf(selectedDay ?: "") }
 
     val calendar = Calendar.getInstance()
-    val hour = calendar[Calendar.HOUR_OF_DAY]
-    val minute = calendar[Calendar.MINUTE]
+    val curHour = calendar[Calendar.HOUR_OF_DAY]
+    val curMinute = calendar[Calendar.MINUTE]
 
     val startTimeHolderDefault = "Start Time"
     val startTimeHolder = remember { mutableStateOf(startTimeValue ?: TimeHolder(default = startTimeHolderDefault)) }
     val endTimeHolderDefault = "End Time"
     val endTimeHolder = remember { mutableStateOf(endTimeValue ?: TimeHolder(default = endTimeHolderDefault)) }
 
+    val location = remember { mutableStateOf(locationValue ?: "") }
+
+    val defaultText = "Tap to edit class time details"
+    val displayText = remember { mutableStateOf(
+        if(selectedDay!!.isBlank() || startTimeValue == null || endTimeValue == null)
+            defaultText
+        else
+            getUpdatedDisplayText(selectedDayText, startTimeHolder.value, endTimeHolder.value, location.value)
+        )
+    }
+
+    val openDialog = remember { mutableStateOf(false) }
+
     val startTimePickerDialog = TimePickerDialog(
         context,
         R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
             startTimeHolder.value = TimeHolder(
-                hour = (if(hour - 12 <= 0) hour else (hour - 12)).toString(),
-                minute = if(minute / 10 < 1) "0$minute" else minute.toString(),
-                ampm = if(hour - 12 < 0) "AM" else "PM"
+                hour = if (hour % 12 == 0) "12" else (hour % 12).toString(),
+                minute = if(minute < 10) "0$minute" else minute.toString(),
+                ampm = if(hour < 12) "AM" else "PM"
             )
             onStartTimeValueChange(startTimeHolder.value)
-        }, hour, minute, false
+        }, curHour, curMinute, false
     )
 
     val endTimePickerDialog = TimePickerDialog(
@@ -59,92 +87,206 @@ fun ClassTimeItem(
         R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
             endTimeHolder.value = TimeHolder(
-                hour = (if(hour - 12 <= 0) hour else (hour - 12)).toString(),
-                minute = if(minute / 10 < 1) "0$minute" else minute.toString(),
-                ampm = if(hour - 12 < 0) "AM" else "PM"
+                hour = if (hour % 12 == 0) "12" else (hour % 12).toString(),
+                minute = if(minute < 10) "0$minute" else minute.toString(),
+                ampm = if(hour < 12) "AM" else "PM"
             )
             onEndTimeValueChange(endTimeHolder.value)
-        }, hour, minute, false
+        }, curHour, curMinute, false
     )
-
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ExposedDropdownMenuBox(
-            expanded = dayExpanded,
-            onExpandedChange = {
-                dayExpanded = !dayExpanded
-            },
+        Box(
             modifier = Modifier
-                .weight(0.9f)
-        ) {
-            TextField(
-                readOnly = true,
-                value = if(selectedDayText.length >= 3) selectedDayText.substring(0,3) else "",
-                onValueChange = { },
-                placeholder = { Text(text = "Day", color = Color.DarkGray, textAlign = TextAlign.Center) },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(
-                        expanded = dayExpanded
-                    )
-                },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(backgroundColor = Color.Black),
-                shape = RectangleShape,
-                modifier = Modifier
-                    .height(50.dp)
-            )
-            ExposedDropdownMenu(
-                expanded = dayExpanded,
-                onDismissRequest = {
-                    dayExpanded = false
+                .fillMaxWidth()
+                .height(50.dp)
+                .clickable {
+                    openDialog.value = true
                 }
-            ) {
-                dayOptions.forEach { selectionOption ->
-                    val opt: String = selectionOption.substring(0, 3)
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedDayText = opt
-                            dayExpanded = false
-                            onDayValueChange(selectedDayText)
-                        }
+        ) {
+            Text(
+                text = displayText.value,
+                color = if(displayText.value == defaultText) Color.DarkGray else Color.White,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+
+    if(openDialog.value) {
+        NoPaddingAlertDialog(
+            onDismissRequest = {
+                openDialog.value = false
+
+                if(selectedDayText.isNotEmpty() && startTimeHolder.value.toString() != startTimeHolderDefault && endTimeHolder.value.toString() != endTimeHolderDefault) {
+                    displayText.value = getUpdatedDisplayText(selectedDayText, startTimeHolder.value, endTimeHolder.value, location.value)
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = opt)
+                        Icon(
+                            imageVector = Icons.Default.Title,
+                            contentDescription = "Name",
+                            tint = Color.White,
+                            modifier = Modifier.padding(start = 16.dp, end = 6.dp)
+                        )
+                        ExposedDropdownMenuBox(
+                            expanded = dayExpanded,
+                            onExpandedChange = {
+                                dayExpanded = !dayExpanded
+                            }
+                        ) {
+                            TextField(
+                                readOnly = true,
+                                value = selectedDayText,
+                                onValueChange = { },
+                                placeholder = {
+                                    Text(
+                                        text = "Day",
+                                        color = Color.DarkGray,
+                                        textAlign = TextAlign.Center
+                                    )
+                                },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = dayExpanded
+                                    )
+                                },
+                                colors = ExposedDropdownMenuDefaults.textFieldColors(textColor = Color.White),
+                                shape = RectangleShape,
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = dayExpanded,
+                                onDismissRequest = {
+                                    dayExpanded = false
+                                }
+                            ) {
+                                dayOptions.forEach { selectionOption ->
+                                    val opt: String = selectionOption
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            selectedDayText = opt
+                                            dayExpanded = false
+                                            onDayValueChange(selectedDayText)
+                                        }
+                                    ) {
+                                        Text(text = opt)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MyLocation,
+                            contentDescription = "Location",
+                            tint = Color.White,
+                            modifier = Modifier.padding(start = 16.dp, end = 6.dp)
+                        )
+                        CustomTextField(
+                            text = location.value,
+                            hint = "Location",
+                            onValueChange = {
+                                location.value = it
+                                onLocationValueChange(location.value)
+                            },
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.body1,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Timer,
+                            contentDescription = "Time",
+                            tint = Color.White,
+                            modifier = Modifier.padding(start = 16.dp, end = 6.dp)
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .height(50.dp)
+                                .clickable {
+                                    startTimePickerDialog.show()
+                                }
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = RectangleShape
+                                ),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = startTimeHolder.value.toString(),
+                                color = if (startTimeHolder.value.toString() == startTimeHolderDefault) Color.DarkGray else Color.White,
+                                textAlign = TextAlign.Left,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                        Text(text = "-", color = Color.White)
+                        Box(
+                            modifier = Modifier
+                                .height(50.dp)
+                                .clickable {
+                                    endTimePickerDialog.show()
+                                }
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = RectangleShape
+                                ),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = endTimeHolder.value.toString(),
+                                color = if (endTimeHolder.value.toString() == endTimeHolderDefault) Color.DarkGray else Color.White,
+                                textAlign = TextAlign.Left,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
                     }
                 }
-            }
-        }
-
-        Button(
-            onClick = { startTimePickerDialog.show() },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
-            shape = RectangleShape,
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            ),
             modifier = Modifier
-                .height(50.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = startTimeHolder.value.toString(),
-                color = if (startTimeHolder.value.toString() == startTimeHolderDefault) Color.DarkGray else Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
+                .fillMaxWidth(0.8f)
+                .height(150.dp)
+                .clip(RoundedCornerShape(15.dp)),
+            backgroundColor = DarkGray
+        )
+    }
+}
 
-        Button(
-            onClick = { endTimePickerDialog.show() },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
-            shape = RectangleShape,
-            modifier = Modifier
-                .height(50.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = endTimeHolder.value.toString(),
-                color = if (endTimeHolder.value.toString() == endTimeHolderDefault) Color.DarkGray else Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
+private fun getUpdatedDisplayText(day: String, startTime: TimeHolder, endTime: TimeHolder, location: String): String {
+    val newDay = if(day.length >= 3) day.substring(0, 3) else day
+    return if(location.isNullOrBlank()) {
+        "$newDay at $startTime-$endTime"
+    }
+    else {
+        "$newDay at $startTime-$endTime in $location"
     }
 }

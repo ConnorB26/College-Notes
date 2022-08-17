@@ -1,10 +1,7 @@
 package com.connorb26.notesapp.feature_note.domain.util
 
 import androidx.room.TypeConverter
-import com.connorb26.notesapp.feature_note.domain.model.Class
-import com.connorb26.notesapp.feature_note.domain.model.ClassTimes
-import com.connorb26.notesapp.feature_note.domain.model.Exams
-import com.connorb26.notesapp.feature_note.domain.model.HomeworkList
+import com.connorb26.notesapp.feature_note.domain.model.*
 import com.google.gson.Gson
 
 class Converters {
@@ -36,5 +33,15 @@ class Converters {
     @TypeConverter
     fun homeworkListToStoredString(homeworkList: HomeworkList): String {
         return Gson().toJson(homeworkList)
+    }
+
+    @TypeConverter
+    fun storedStringToDateHolder(value: String): DateHolder {
+        return Gson().fromJson(value, DateHolder::class.java)
+    }
+
+    @TypeConverter
+    fun dateHolderToStoredString(dateHolder: DateHolder): String {
+        return Gson().toJson(dateHolder)
     }
 }

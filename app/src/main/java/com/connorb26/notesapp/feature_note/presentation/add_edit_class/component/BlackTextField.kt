@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -30,7 +31,11 @@ fun BlackTextField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = false,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    icon: ImageVector? = null,
+    iconDesc: String = "",
+    readOnly: Boolean = false,
+    readOnlyColor: Color = Color.Gray
 ) {
     val customTextSelectionColors = TextSelectionColors(
         handleColor = LightGray,
@@ -45,7 +50,8 @@ fun BlackTextField(
                 value = text,
                 onValueChange = onValueChange,
                 singleLine = singleLine,
-                textStyle = textStyle.copy(color = Color.White),
+                textStyle = textStyle.copy(color = if(readOnly) readOnlyColor else Color.White),
+                readOnly = readOnly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Black),
@@ -56,10 +62,22 @@ fun BlackTextField(
                 colors = TextFieldDefaults.textFieldColors(
                     cursorColor = Color.White,
                     backgroundColor = Color.Transparent,
-                    textColor = Color.White
+                    textColor = if(readOnly) readOnlyColor else Color.White
                 ),
-                placeholder = { Text(text = hint, style = textStyle, color = Color.DarkGray) }
+                placeholder = { Text(text = hint, style = textStyle, color = Color.DarkGray) },
+                leadingIcon = if(icon != null) leadingIconComp(icon, iconDesc) else null
             )
         }
     }
+}
+
+private fun leadingIconComp(
+    icon: ImageVector,
+    iconDesc: String
+) = @Composable {
+    Icon(
+        imageVector = icon,
+        contentDescription = iconDesc,
+        tint = Color.White
+    )
 }

@@ -82,7 +82,12 @@ object AppModule {
             getEventsRange = GetEventsRange(),
             addEvent = AddEvent(),
             addHW = AddHW(),
-            editEvent = EditEvent()
+            editEvent = EditEvent(),
+            deleteEvent = DeleteEvent(),
+            addExam = AddExam(),
+            updateExam = UpdateExam(),
+            getEventByID = GetEventByID(),
+            addClassTime = AddClassTime()
         )
     }
 }

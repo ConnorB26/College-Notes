@@ -75,8 +75,8 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Screen.ClassScreen.route,
                             enterTransition = {
-                                when(targetState.destination.route) {
-                                    Screen.ClassScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
+                                when(initialState.destination.route) {
+                                    Screen.NotesScreen.route -> slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(500))
                                     else -> null
                                 }
                             },
@@ -149,7 +149,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         ) {
-                            AddEditClassScreen(navController = navController)
+                            val name = it.arguments?.getString("className") ?: ""
+                            AddEditClassScreen(
+                                navController = navController,
+                                className = name
+                            )
                         }
                     }
                 }

@@ -133,13 +133,9 @@ fun ClassesScreen(
                         onDeleteClick = {
                             viewModel.onEvent(ClassesEvent.DeleteClass(classObj))
                             scope.launch {
-                                val result = scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "Class deleted",
-                                    actionLabel = "Undo"
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = "Class deleted"
                                 )
-                                if(result == SnackbarResult.ActionPerformed) {
-                                    viewModel.onEvent(ClassesEvent.RestoreClass)
-                                }
                             }
                         }
                     )
