@@ -25,7 +25,7 @@ fun ClassItem(
     Card(
         modifier = modifier,
         backgroundColor = color,
-        shape = RoundedCornerShape(15.dp),
+        shape = RoundedCornerShape(10.dp),
         elevation = 10.dp
     ) {
         Row(

@@ -28,6 +28,7 @@ import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.DateHolder
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
 import com.connorb26.notesapp.ui.theme.DarkGray
+import com.connorb26.notesapp.ui.theme.Gray
 import java.util.*
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -96,13 +97,17 @@ fun ExamItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
+                .background(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .clickable {
                     openDialog.value = true
                 }
         ) {
             Text(
                 text = displayText.value,
-                color = if(displayText.value == defaultText) Color.DarkGray else Color.White,
+                color = if(displayText.value == defaultText) Gray else Color.White,
                 modifier = Modifier.padding(16.dp)
             )
         }

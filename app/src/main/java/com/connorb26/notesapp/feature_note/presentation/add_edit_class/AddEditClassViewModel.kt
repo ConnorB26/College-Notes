@@ -205,6 +205,15 @@ class AddEditClassViewModel @Inject constructor(
                     _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
+            is AddEditClassEvent.ShowSnackbarMessage -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackbar(
+                            message = event.value
+                        )
+                    )
+                }
+            }
         }
     }
 

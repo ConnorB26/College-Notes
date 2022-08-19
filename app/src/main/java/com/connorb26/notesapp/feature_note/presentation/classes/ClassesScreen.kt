@@ -53,7 +53,6 @@ fun ClassesScreen(
             Column (
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.secondary)
             ) {
                 Spacer(modifier = Modifier.height(1.dp))
                 Row(

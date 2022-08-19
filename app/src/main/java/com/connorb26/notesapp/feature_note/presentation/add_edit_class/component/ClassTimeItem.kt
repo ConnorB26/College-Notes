@@ -26,6 +26,7 @@ import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder.Companion.addHour
 import com.connorb26.notesapp.ui.theme.DarkGray
+import com.connorb26.notesapp.ui.theme.Gray
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -94,13 +95,17 @@ fun ClassTimeItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
+                .background(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(10.dp)
+                )
                 .clickable {
                     openDialog.value = true
                 }
         ) {
             Text(
                 text = displayText.value,
-                color = if(displayText.value == defaultText) Color.DarkGray else Color.White,
+                color = if(displayText.value == defaultText) Gray else Color.White,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -167,7 +172,9 @@ fun ClassTimeItem(
                                 expanded = dayExpanded,
                                 onDismissRequest = {
                                     dayExpanded = false
-                                }
+                                },
+                                modifier = Modifier
+                                    .background(DarkGray)
                             ) {
                                 dayOptions.forEach { selectionOption ->
                                     val opt: String = selectionOption
@@ -178,7 +185,10 @@ fun ClassTimeItem(
                                             onDayValueChange(selectedDayText)
                                         }
                                     ) {
-                                        Text(text = opt)
+                                        Text(
+                                            text = opt,
+                                            color = Color.White
+                                        )
                                     }
                                 }
                             }
@@ -278,9 +288,9 @@ fun ClassTimeItem(
 private fun getUpdatedDisplayText(day: String, startTime: TimeHolder, endTime: TimeHolder, location: String): String {
     val newDay = if(day.length >= 3) day.substring(0, 3) else day
     return if(location.isBlank()) {
-        "$newDay at $startTime-$endTime"
+        "$newDay at $startTime - $endTime"
     }
     else {
-        "$newDay at $startTime-$endTime in $location"
+        "$newDay at $startTime - $endTime in $location"
     }
 }
