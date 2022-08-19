@@ -1,9 +1,6 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
-import android.content.ContentUris
-import android.database.Cursor
-import android.icu.util.Calendar
-import android.provider.CalendarContract
+import android.graphics.Color.toArgb
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -11,12 +8,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -24,31 +30,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColor
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
-import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.TransparentHintTextField
-import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarEvent
+import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.CustomTextField
+import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.NoPaddingAlertDialog
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.ui.theme.DarkGray
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddEditNoteScreen(
     navController: NavController,
     noteColor: Int,
     viewModel: AddEditNoteViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
-
     val titleState = viewModel.noteTitle.value
     val contentState = viewModel.noteContent.value
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+
+    val colorSection = remember { mutableStateOf(false) }
 
     val noteBackgroundAnimate = remember {
         Animatable(
@@ -100,7 +111,7 @@ fun AddEditNoteScreen(
             ) {
                 IconButton(
                     onClick = {
-                        viewModel.onEvent(AddEditNoteEvent.SaveNoteAndNavigate)
+                        viewModel.onEvent(AddEditNoteEvent.Navigate)
                     },
                     modifier = Modifier.offset((-15).dp)
                 ) {
@@ -111,27 +122,22 @@ fun AddEditNoteScreen(
                         modifier = Modifier.size(30.dp)
                     )
                 }
-
-                TransparentHintTextField(
+                CustomTextField(
                     text = titleState.text,
                     hint = titleState.hint,
                     onValueChange = {
                         viewModel.onEvent(AddEditNoteEvent.EnteredTitle(it))
                     },
-                    onFocusChange = {
-                        viewModel.onEvent(AddEditNoteEvent.ChangeTitleFocus(it))
-                    },
                     singleLine = true,
-                    isHintVisible = titleState.isHintVisible,
-                    textStyle = MaterialTheme.typography.h5,
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    textStyle = MaterialTheme.typography.h5.copy(Color.DarkGray),
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    selectionColor = DarkGray,
+                    textColor = DarkGray
                 )
-
-                Spacer(Modifier.weight(1f))
 
                 IconButton(
                     onClick = {
-                        viewModel.onEvent(AddEditNoteEvent.ToggleColorSection)
+                        colorSection.value = !colorSection.value
                     },
                     modifier = Modifier.offset(5.dp)
                 ) {
@@ -144,29 +150,26 @@ fun AddEditNoteScreen(
                 }
             }
             AnimatedVisibility(
-                visible = state.isColorSectionVisible,
+                visible = colorSection.value,
                 enter = fadeIn() + slideInVertically(),
                 exit = fadeOut() + slideOutVertically()
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Note.noteColors.forEach { color ->
                         val colorInt = color.toArgb()
                         Box(
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(33.dp)
                                 .shadow(9.dp, CircleShape)
                                 .clip(CircleShape)
                                 .background(color)
                                 .border(
                                     width = 2.dp,
                                     color = if (viewModel.noteColor.value == colorInt) {
-                                        Color.Black
+                                        Color(ColorUtils.blendARGB(viewModel.noteColor.value, Color.Black.toArgb(), 0.5f))
                                     } else Color.Transparent,
                                     shape = CircleShape
                                 )
@@ -185,20 +188,18 @@ fun AddEditNoteScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            TransparentHintTextField(
+
+            CustomTextField(
                 text = contentState.text,
                 hint = contentState.hint,
                 onValueChange = {
                     viewModel.onEvent(AddEditNoteEvent.EnteredContent(it))
                 },
-                onFocusChange = {
-                    viewModel.onEvent(AddEditNoteEvent.ChangeContentFocus(it))
-                },
                 singleLine = false,
-                isHintVisible = contentState.isHintVisible,
-                textStyle = MaterialTheme.typography.body1,
-                modifier = Modifier.fillMaxHeight()
+                textStyle = MaterialTheme.typography.body1.copy(Color.DarkGray),
+                modifier = Modifier.fillMaxHeight(),
+                selectionColor = DarkGray,
+                textColor = DarkGray
             )
         }
     }

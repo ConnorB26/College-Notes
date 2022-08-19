@@ -21,12 +21,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
-import com.connorb26.notesapp.feature_note.presentation.add_edit_class.AddEditClassEvent
-import com.connorb26.notesapp.ui.theme.Blue
+import com.connorb26.notesapp.feature_note.domain.model.TimeHolder.Companion.addHour
 import com.connorb26.notesapp.ui.theme.DarkGray
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
@@ -52,9 +50,9 @@ fun ClassTimeItem(
     val curMinute = calendar[Calendar.MINUTE]
 
     val startTimeHolderDefault = "Start Time"
-    val startTimeHolder = remember { mutableStateOf(startTimeValue ?: TimeHolder(default = startTimeHolderDefault)) }
+    val startTimeHolder = remember { mutableStateOf(startTimeValue ?: TimeHolder.createDefault(startTimeHolderDefault)) }
     val endTimeHolderDefault = "End Time"
-    val endTimeHolder = remember { mutableStateOf(endTimeValue ?: TimeHolder(default = endTimeHolderDefault)) }
+    val endTimeHolder = remember { mutableStateOf(endTimeValue ?: TimeHolder.createDefault(endTimeHolderDefault)) }
 
     val location = remember { mutableStateOf(locationValue ?: "") }
 
@@ -73,11 +71,7 @@ fun ClassTimeItem(
         context,
         R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
-            startTimeHolder.value = TimeHolder(
-                hour = if (hour % 12 == 0) "12" else (hour % 12).toString(),
-                minute = if(minute < 10) "0$minute" else minute.toString(),
-                ampm = if(hour < 12) "AM" else "PM"
-            )
+            startTimeHolder.value = TimeHolder.create(hour, minute)
             onStartTimeValueChange(startTimeHolder.value)
         }, curHour, curMinute, false
     )
@@ -86,11 +80,7 @@ fun ClassTimeItem(
         context,
         R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
-            endTimeHolder.value = TimeHolder(
-                hour = if (hour % 12 == 0) "12" else (hour % 12).toString(),
-                minute = if(minute < 10) "0$minute" else minute.toString(),
-                ampm = if(hour < 12) "AM" else "PM"
-            )
+            endTimeHolder.value = TimeHolder.create(hour, minute)
             onEndTimeValueChange(endTimeHolder.value)
         }, curHour, curMinute, false
     )
@@ -120,6 +110,10 @@ fun ClassTimeItem(
         NoPaddingAlertDialog(
             onDismissRequest = {
                 openDialog.value = false
+
+                if(TimeHolder.compare(startTimeHolder.value, endTimeHolder.value)) {
+                    endTimeHolder.value = addHour(startTimeHolder.value)
+                }
 
                 if(selectedDayText.isNotEmpty() && startTimeHolder.value.toString() != startTimeHolderDefault && endTimeHolder.value.toString() != endTimeHolderDefault) {
                     displayText.value = getUpdatedDisplayText(selectedDayText, startTimeHolder.value, endTimeHolder.value, location.value)
@@ -283,7 +277,7 @@ fun ClassTimeItem(
 
 private fun getUpdatedDisplayText(day: String, startTime: TimeHolder, endTime: TimeHolder, location: String): String {
     val newDay = if(day.length >= 3) day.substring(0, 3) else day
-    return if(location.isNullOrBlank()) {
+    return if(location.isBlank()) {
         "$newDay at $startTime-$endTime"
     }
     else {

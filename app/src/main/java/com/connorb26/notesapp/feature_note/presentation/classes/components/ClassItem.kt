@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -18,11 +19,14 @@ import com.connorb26.notesapp.feature_note.domain.model.Class
 fun ClassItem(
     classObj: Class,
     modifier: Modifier = Modifier,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    color: Color = Color.Black
 ) {
     Card(
         modifier = modifier,
-        backgroundColor = Color.Black
+        backgroundColor = color,
+        shape = RoundedCornerShape(15.dp),
+        elevation = 10.dp
     ) {
         Row(
             modifier = Modifier

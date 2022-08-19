@@ -73,11 +73,7 @@ fun ExamItem(
         context,
         R.style.Theme_Dialog,
         { _: DatePicker, year: Int, month: Int, day: Int ->
-            dateHolder.value = DateHolder(
-                day = day.toString(),
-                month = (month+1).toString(),
-                year = year.toString().substring(2,4)
-            )
+            dateHolder.value = DateHolder.create(year, month, day)
             onDateValueChange(dateHolder.value)
         }, curYear, curMonth, curDay
     )
@@ -86,11 +82,7 @@ fun ExamItem(
         context,
         R.style.Theme_Dialog,
         {_, hour: Int, minute: Int ->
-            timeHolder.value = TimeHolder(
-                hour = if (hour % 12 == 0) "12" else (hour % 12).toString(),
-                minute = if(minute < 10) "0$minute" else minute.toString(),
-                ampm = if(hour < 12) "AM" else "PM"
-            )
+            timeHolder.value = TimeHolder.create(hour, minute)
             onTimeValueChange(timeHolder.value)
         }, curHour, curMinute, false
     )

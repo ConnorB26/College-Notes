@@ -1,11 +1,12 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_class
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
+import android.provider.CalendarContract
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,12 @@ class AddEditClassViewModel @Inject constructor(
     private val _classState = mutableStateOf(AddEditClassState())
     val classState: State<AddEditClassState> = _classState
 
+    private val _firstDay = mutableStateOf(classState.value.firstDay)
+    val firstDay: State<DateHolder> = _firstDay
+
+    private val _lastDay = mutableStateOf(classState.value.lastDay)
+    val lastDay: State<DateHolder> = _lastDay
+
     private var _classTimes = mutableStateOf(classState.value.classTimes)
     var classTimes: State<List<ClassTime>> = _classTimes
 
@@ -56,10 +63,13 @@ class AddEditClassViewModel @Inject constructor(
                             exams = classObj.exams.exams,
                             homeworkList = classObj.homework.homework,
                             firstDay = classObj.firstDay,
-                            lastDay = classObj.lastDay
+                            lastDay = classObj.lastDay,
+                            color = classObj.color
                         )
                         _classTimes.value = classObj.classTimes.classTimes
                         _exams.value = classObj.exams.exams
+                        _firstDay.value = classObj.firstDay
+                        _lastDay.value = classObj.lastDay
                     }
                 }
             }
@@ -73,15 +83,16 @@ class AddEditClassViewModel @Inject constructor(
                     name = event.value
                 )
             }
-            is AddEditClassEvent.EnteredFirstDay -> {
+            is AddEditClassEvent.EnteredColor -> {
                 _classState.value = classState.value.copy(
-                    firstDay = event.value
+                    color = event.value
                 )
             }
+            is AddEditClassEvent.EnteredFirstDay -> {
+                _firstDay.value = event.value
+            }
             is AddEditClassEvent.EnteredLastDay -> {
-                _classState.value = classState.value.copy(
-                    lastDay = event.value
-                )
+                _lastDay.value = event.value
             }
             is AddEditClassEvent.EnteredClassDay -> {
                 classTimes.value[classTimes.value.indexOf(event.classTime)].dayOfWeek = event.value
@@ -126,64 +137,67 @@ class AddEditClassViewModel @Inject constructor(
             }
             is AddEditClassEvent.SaveClass -> {
                 viewModelScope.launch {
-                    for(exam: Exam in exams.value) {
-                        if(exam.eventID == -1L) {
-                            exam.eventID = calendarUseCases.addExam(
-                                context,
-                                exam.name,
-                                exam.date,
-                                exam.time,
-                                classState.value.name
+                    try {
+                        classUseCases.addClass(
+                            Class(
+                                name = classState.value.name,
+                                classTimes = ClassTimes(classTimes.value),
+                                exams = Exams(exams.value),
+                                homework = HomeworkList(classState.value.homeworkList),
+                                firstDay = firstDay.value,
+                                lastDay = lastDay.value,
+                                color = classState.value.color
                             )
-                        }
-                        else {
-                            calendarUseCases.updateExam(
-                                context,
-                                exam.eventID,
-                                exam.name,
-                                exam.date,
-                                exam.time,
-                                classState.value.name
-                            )
-                        }
-                    }
-                    for(classTime: ClassTime in classTimes.value) {
-                        if(classTime.eventID == -1L) {
-                            classTime.eventID = calendarUseCases.addClassTime(
-                                context,
-                                classState.value.name,
-                                classTime.dayOfWeek,
-                                classTime.startTime!!,
-                                classTime.endTime!!,
-                                classState.value.firstDay,
-                                classState.value.lastDay
-                            )
-                        }
-                        else {
-                            //calendarUseCases.updateExam(context, classTime.eventID, classTime.name, classTime.date, classTime.time, classState.value.name)
-                        }
-                    }
-                    for(exam: Exam in examsToDelete) {
-                        if(exam.eventID != -1L) {
-                            calendarUseCases.deleteEvent(context, exam.eventID)
-                        }
-                    }
-                    for(classTime: ClassTime in classTimesToDelete) {
-                        if(classTime.eventID != -1L) {
-                            calendarUseCases.deleteEvent(context, classTime.eventID)
-                        }
-                    }
-                    classUseCases.addClass(
-                        Class(
-                            name = classState.value.name,
-                            classTimes = ClassTimes(classTimes.value),
-                            exams = Exams(exams.value),
-                            homework = HomeworkList(classState.value.homeworkList),
-                            firstDay = classState.value.firstDay,
-                            lastDay = classState.value.lastDay
                         )
-                    )
-                    _eventFlow.emit(UiEvent.NavigateUp)
+                        for(exam: Exam in exams.value) {
+                            if(exam.isValid()) {
+                                if(exam.eventID != -1L) {
+                                    calendarUseCases.deleteEvent(context, exam.eventID)
+                                }
+                                exam.eventID = calendarUseCases.addExam(
+                                    context,
+                                    exam.name,
+                                    exam.date!!,
+                                    exam.time!!,
+                                    classState.value.name
+                                )
+                            }
+                        }
+                        for(classTime: ClassTime in classTimes.value) {
+                            if(classTime.isValid()) {
+                                if(classTime.eventID != -1L) {
+                                    calendarUseCases.deleteEvent(context, classTime.eventID)
+                                }
+                                classTime.eventID = calendarUseCases.addClassTime(
+                                    context,
+                                    classState.value.name,
+                                    classTime.dayOfWeek,
+                                    classTime.startTime!!,
+                                    classTime.endTime!!,
+                                    firstDay.value,
+                                    lastDay.value,
+                                    classTime.location ?: ""
+                                )
+                            }
+                        }
+                        for(exam: Exam in examsToDelete) {
+                            if(exam.eventID != -1L && exam.isValid()) {
+                                calendarUseCases.deleteEvent(context, exam.eventID)
+                            }
+                        }
+                        for(classTime: ClassTime in classTimesToDelete) {
+                            if(classTime.eventID != -1L && classTime.isValid()) {
+                                calendarUseCases.deleteEvent(context, classTime.eventID)
+                            }
+                        }
+                        _eventFlow.emit(UiEvent.NavigateUp)
+                    } catch(e: InvalidClassException) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = e.message ?: "Couldn't save class"
+                            )
+                        )
+                    }
                 }
             }
             is AddEditClassEvent.CancelClass -> {

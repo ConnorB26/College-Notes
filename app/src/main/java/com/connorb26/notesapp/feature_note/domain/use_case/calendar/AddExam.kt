@@ -23,7 +23,7 @@ class AddExam {
         val timeZone: TimeZone = TimeZone.getDefault()
         val values = ContentValues().apply {
             put(CalendarContract.Events.DTSTART, timeInMillis)
-            put(CalendarContract.Events.DTEND, timeInMillis)
+            put(CalendarContract.Events.DTEND, timeInMillis+7200000)
             put(CalendarContract.Events.TITLE, "$className $name")
             put(CalendarContract.Events.CALENDAR_ID, getCalendarId(context))
             put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.id)

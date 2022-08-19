@@ -33,11 +33,13 @@ fun CustomTextField(
     singleLine: Boolean = false,
     onValueChange: (String) -> Unit,
     iconComp: @Composable() (() -> Unit)? = null,
-    backgroundColor: Color = Color.Transparent
+    backgroundColor: Color = Color.Transparent,
+    selectionColor: Color = LightGray,
+    textColor: Color = Color.White
 ) {
     val customTextSelectionColors = TextSelectionColors(
-        handleColor = LightGray,
-        backgroundColor = LightGray.copy(alpha = 0.4f)
+        handleColor = selectionColor,
+        backgroundColor = selectionColor.copy(alpha = 0.4f)
     )
 
     Box(
@@ -48,7 +50,7 @@ fun CustomTextField(
                 value = text,
                 onValueChange = onValueChange,
                 singleLine = singleLine,
-                textStyle = textStyle.copy(color = Color.White),
+                textStyle = textStyle.copy(color = textColor),
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(backgroundColor),
@@ -57,9 +59,12 @@ fun CustomTextField(
                     autoCorrect = true
                 ),
                 colors = TextFieldDefaults.textFieldColors(
-                    cursorColor = Color.White,
+                    cursorColor = textColor,
                     backgroundColor = Color.Transparent,
-                    textColor = Color.White
+                    textColor = textColor,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
                 ),
                 placeholder = { Text(text = hint, style = textStyle, color = Color.DarkGray) },
                 leadingIcon = iconComp

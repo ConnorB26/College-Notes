@@ -9,6 +9,5 @@ data class CalendarUseCases(
     val deleteEvent: DeleteEvent,
     val getEventByID: GetEventByID,
     val addExam: AddExam,
-    val updateExam: UpdateExam,
     val addClassTime: AddClassTime
 )

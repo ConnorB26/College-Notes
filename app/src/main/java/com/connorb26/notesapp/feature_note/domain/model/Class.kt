@@ -1,6 +1,5 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
-import android.icu.util.Calendar
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,5 +10,8 @@ data class Class(
     val exams: Exams,
     val homework: HomeworkList,
     val firstDay: DateHolder,
-    val lastDay: DateHolder
+    val lastDay: DateHolder,
+    val color: Int
 )
+
+class InvalidClassException(message: String): Exception(message)

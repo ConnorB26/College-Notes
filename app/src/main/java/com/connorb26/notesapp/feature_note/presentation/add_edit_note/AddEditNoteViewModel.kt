@@ -21,9 +21,6 @@ class AddEditNoteViewModel @Inject constructor(
     private val noteUseCases: NoteUseCases,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
-    private val _state = mutableStateOf(AddEditNoteState())
-    val state: State<AddEditNoteState> = _state
-
     private val _noteTitle = mutableStateOf(NoteTextFieldState(
         hint = "Enter a title"
     ))
@@ -49,12 +46,10 @@ class AddEditNoteViewModel @Inject constructor(
                     noteUseCases.getNote(noteId)?.also { note ->
                         currentNoteId = note.id
                         _noteTitle.value = noteTitle.value.copy(
-                            text = note.title,
-                            isHintVisible = false
+                            text = note.title
                         )
                         _noteContent.value = noteContent.value.copy(
-                            text = note.content,
-                            isHintVisible = noteContent.value.text.isBlank()
+                            text = note.content
                         )
                         _noteColor.value = note.color
                     }
@@ -70,26 +65,9 @@ class AddEditNoteViewModel @Inject constructor(
                     text = event.value
                 )
             }
-            is AddEditNoteEvent.ChangeTitleFocus -> {
-                _noteTitle.value = noteTitle.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            noteTitle.value.text.isBlank()
-                )
-            }
             is AddEditNoteEvent.EnteredContent -> {
                 _noteContent.value = noteContent.value.copy(
                     text = event.value
-                )
-            }
-            is AddEditNoteEvent.ChangeContentFocus -> {
-                _noteContent.value = noteContent.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            noteContent.value.text.isBlank()
-                )
-            }
-            is AddEditNoteEvent.ToggleColorSection -> {
-                _state.value = state.value.copy(
-                    isColorSectionVisible = !state.value.isColorSectionVisible
                 )
             }
             is AddEditNoteEvent.ChangeColor -> {
@@ -98,6 +76,11 @@ class AddEditNoteViewModel @Inject constructor(
             is AddEditNoteEvent.SaveNoteAndNavigate -> {
                 viewModelScope.launch {
                     onEvent(AddEditNoteEvent.SaveNote)
+                    _eventFlow.emit(UiEvent.NavigateUp)
+                }
+            }
+            is AddEditNoteEvent.Navigate -> {
+                viewModelScope.launch {
                     _eventFlow.emit(UiEvent.NavigateUp)
                 }
             }
