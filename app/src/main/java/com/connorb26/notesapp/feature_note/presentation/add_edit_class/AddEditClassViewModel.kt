@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.connorb26.notesapp.feature_note.domain.model.*
 import com.connorb26.notesapp.feature_note.domain.use_case.calendar.CalendarUseCases
 import com.connorb26.notesapp.feature_note.domain.use_case.classes.ClassUseCases
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +34,9 @@ class AddEditClassViewModel @Inject constructor(
 
     private val _classState = mutableStateOf(AddEditClassState())
     val classState: State<AddEditClassState> = _classState
+
+    private val _clampedColor = mutableStateOf(Color(classState.value.color))
+    val clampedColor: State<Color> = _clampedColor
 
     private val _firstDay = mutableStateOf(classState.value.firstDay)
     val firstDay: State<DateHolder> = _firstDay
@@ -70,6 +74,7 @@ class AddEditClassViewModel @Inject constructor(
                         _exams.value = classObj.exams.exams
                         _firstDay.value = classObj.firstDay
                         _lastDay.value = classObj.lastDay
+                        _clampedColor.value = VariableColor.setLuminance(Color(classObj.color), 0.4f)
                     }
                 }
             }
@@ -87,6 +92,7 @@ class AddEditClassViewModel @Inject constructor(
                 _classState.value = classState.value.copy(
                     color = event.value
                 )
+                _clampedColor.value = VariableColor.setLuminance(Color(event.value), 0.4f)
             }
             is AddEditClassEvent.EnteredFirstDay -> {
                 _firstDay.value = event.value

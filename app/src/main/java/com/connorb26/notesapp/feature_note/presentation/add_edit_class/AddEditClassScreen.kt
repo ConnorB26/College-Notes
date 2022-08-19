@@ -2,6 +2,7 @@ package com.connorb26.notesapp.feature_note.presentation.add_edit_class
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
+import android.util.Log
 import android.widget.DatePicker
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
@@ -41,6 +42,7 @@ import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.DateHolder
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.*
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 import com.connorb26.notesapp.feature_note.presentation.util.scrollbar
 import com.connorb26.notesapp.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -54,15 +56,16 @@ fun AddEditClassScreen(
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
 
-    val colorPickerEnabled = remember { mutableStateOf(false) }
-    val fieldLabelColor = Blue2
-    val fieldLabelOffset = Modifier.offset(x = 6.dp)
-
     val classState = viewModel.classState.value
     val classTimes = viewModel.classTimes.value
     var firstDay = viewModel.firstDay.value
     var lastDay = viewModel.lastDay.value
     val exams = viewModel.exams.value
+
+    val colorPickerEnabled = remember { mutableStateOf(false) }
+    val borderColor = Gray
+    val fieldLabelColor = viewModel.clampedColor.value
+    val fieldLabelOffset = Modifier.offset(x = 6.dp)
 
     val calendar = Calendar.getInstance()
 
@@ -132,7 +135,7 @@ fun AddEditClassScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp),
         ) {
             Row(
                 modifier = Modifier
@@ -165,6 +168,7 @@ fun AddEditClassScreen(
                         },
                         singleLine = true,
                         textStyle = MaterialTheme.typography.h5,
+                        borderColor = borderColor,
                         readOnly = className.isNotBlank(),
                         readOnlyColor = Color.LightGray,
                         backgroundColor = DarkIshGray,
@@ -210,7 +214,7 @@ fun AddEditClassScreen(
                             )
                             .border(
                                 width = 2.dp,
-                                color = DarkestGray,
+                                color = borderColor,
                                 shape = RoundedCornerShape(10.dp)
                             )
                     )
@@ -264,7 +268,7 @@ fun AddEditClassScreen(
                                 )
                                 .border(
                                     width = 2.dp,
-                                    color = DarkestGray,
+                                    color = borderColor,
                                     shape = RoundedCornerShape(10.dp)
                                 ),
                             contentAlignment = Alignment.Center
@@ -311,7 +315,7 @@ fun AddEditClassScreen(
                                 )
                                 .border(
                                     width = 2.dp,
-                                    color = DarkestGray,
+                                    color = borderColor,
                                     shape = RoundedCornerShape(10.dp)
                                 ),
                             contentAlignment = Alignment.Center
@@ -378,7 +382,7 @@ fun AddEditClassScreen(
                     )
                     .border(
                         width = 2.dp,
-                        color = DarkestGray,
+                        color = borderColor,
                         shape = RoundedCornerShape(10.dp)
                     )
                     .clip(shape = RoundedCornerShape(10.dp))
@@ -469,7 +473,7 @@ fun AddEditClassScreen(
                     )
                     .border(
                         width = 2.dp,
-                        color = DarkestGray,
+                        color = borderColor,
                         shape = RoundedCornerShape(10.dp)
                     )
                     .clip(shape = RoundedCornerShape(10.dp))

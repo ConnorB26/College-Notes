@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.connorb26.notesapp.feature_note.domain.model.Note
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 
 @Composable
 fun NoteItem(
@@ -68,7 +69,7 @@ fun NoteItem(
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.onSurface,
+                color = VariableColor.getColor(Color(note.color)),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -76,7 +77,7 @@ fun NoteItem(
             Text(
                 text = note.content,
                 style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.onSurface,
+                color = VariableColor.getColor(Color(note.color)),
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis
             )
@@ -88,7 +89,7 @@ fun NoteItem(
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Delete note",
-                tint = MaterialTheme.colors.onSurface
+                tint = VariableColor.getColor(Color(note.color))
             )
         }
     }

@@ -2,6 +2,7 @@ package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.connorb26.notesapp.feature_note.domain.model.InvalidNoteException
 import com.connorb26.notesapp.feature_note.domain.model.Note
 import com.connorb26.notesapp.feature_note.domain.use_case.notes.NoteUseCases
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
+import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.White
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,8 +34,11 @@ class AddEditNoteViewModel @Inject constructor(
     ))
     val noteContent: State<NoteTextFieldState> = _noteContent
 
-    private val _noteColor = mutableStateOf<Int>(White.toArgb())
+    private val _noteColor = mutableStateOf(White.toArgb())
     val noteColor: State<Int> = _noteColor
+
+    private val _complementColor = mutableStateOf(DarkGray.toArgb())
+    val complementColor: State<Int> = _complementColor
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -52,6 +58,7 @@ class AddEditNoteViewModel @Inject constructor(
                             text = note.content
                         )
                         _noteColor.value = note.color
+                        _complementColor.value = VariableColor.getColor(Color(note.color)).toArgb()
                     }
                 }
             }
@@ -72,6 +79,7 @@ class AddEditNoteViewModel @Inject constructor(
             }
             is AddEditNoteEvent.ChangeColor -> {
                 _noteColor.value = event.color
+                _complementColor.value = VariableColor.getColor(Color(event.color)).toArgb()
             }
             is AddEditNoteEvent.SaveNoteAndNavigate -> {
                 viewModelScope.launch {

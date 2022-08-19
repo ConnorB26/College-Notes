@@ -37,6 +37,7 @@ fun CustomBasicTextField(
     backgroundColor: Color = Color.Transparent,
     selectionColor: Color = LightGray,
     textColor: Color = Color.White,
+    borderColor: Color = DarkestGray,
     readOnly: Boolean = false,
     readOnlyColor: Color = Color.Gray,
     readOnlyAction: () -> Unit = { }
@@ -50,7 +51,7 @@ fun CustomBasicTextField(
         modifier = modifier
             .border(
                 width = 2.dp,
-                color = DarkestGray,
+                color = borderColor,
                 shape = RoundedCornerShape(10.dp)
             )
     ) {

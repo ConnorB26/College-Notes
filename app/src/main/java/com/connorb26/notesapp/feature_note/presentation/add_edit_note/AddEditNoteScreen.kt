@@ -28,7 +28,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
-import com.connorb26.notesapp.feature_note.domain.util.VariableTextColor
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.ColorPickerDialog
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.CustomTextField
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
@@ -253,8 +253,8 @@ fun AddEditNoteScreen(
                 singleLine = false,
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier.fillMaxHeight(),
-                selectionColor = VariableTextColor.getColor(Color(viewModel.noteColor.value)),
-                textColor = VariableTextColor.getColor(Color(viewModel.noteColor.value))
+                selectionColor = VariableColor.getColor(Color(viewModel.noteColor.value)),
+                textColor = VariableColor.getColor(Color(viewModel.noteColor.value))
             )
         }
     }

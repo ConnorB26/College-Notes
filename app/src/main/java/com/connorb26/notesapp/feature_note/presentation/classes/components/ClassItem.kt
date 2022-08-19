@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.connorb26.notesapp.feature_note.domain.model.Class
+import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 
 @Composable
 fun ClassItem(
@@ -37,6 +38,7 @@ fun ClassItem(
             Text(
                 text = classObj.name,
                 style = MaterialTheme.typography.h5,
+                color = VariableColor.getColor(color),
                 modifier = Modifier.padding(16.dp)
             )
 
@@ -46,7 +48,7 @@ fun ClassItem(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete Class",
-                    tint = MaterialTheme.colors.primary
+                    tint = VariableColor.getColor(color)
                 )
             }
         }
