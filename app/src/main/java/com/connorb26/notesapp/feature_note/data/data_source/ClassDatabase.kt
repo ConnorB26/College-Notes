@@ -1,5 +1,6 @@
 package com.connorb26.notesapp.feature_note.data.data_source
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters

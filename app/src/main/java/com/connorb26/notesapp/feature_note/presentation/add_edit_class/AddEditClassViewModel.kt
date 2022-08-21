@@ -35,7 +35,7 @@ class AddEditClassViewModel @Inject constructor(
     private val _classState = mutableStateOf(AddEditClassState())
     val classState: State<AddEditClassState> = _classState
 
-    private val _clampedColor = mutableStateOf(Color(classState.value.color))
+    private val _clampedColor = mutableStateOf(VariableColor.setLuminance(Color(classState.value.color), 0.4f))
     val clampedColor: State<Color> = _clampedColor
 
     private val _firstDay = mutableStateOf(classState.value.firstDay)
@@ -54,13 +54,15 @@ class AddEditClassViewModel @Inject constructor(
     private var classTimesToDelete: MutableList<ClassTime> = mutableListOf()
 
     private var currentClassName: String? = null
+    private var currentClassId: Int? = null
 
     init {
-        savedStateHandle.get<String>("className")?.let { className ->
-            if(className.isNotEmpty()) {
+        savedStateHandle.get<Int>("classId")?.let { classId ->
+            if(classId != -1) {
                 viewModelScope.launch {
-                    classUseCases.getClass(className)?.also { classObj ->
+                    classUseCases.getClass(classId)?.also { classObj ->
                         currentClassName = classObj.name
+                        currentClassId = classObj.id
                         _classState.value = classState.value.copy(
                             name = classObj.name,
                             classTimes = classObj.classTimes.classTimes,
@@ -152,7 +154,8 @@ class AddEditClassViewModel @Inject constructor(
                                 homework = HomeworkList(classState.value.homeworkList),
                                 firstDay = firstDay.value,
                                 lastDay = lastDay.value,
-                                color = classState.value.color
+                                color = classState.value.color,
+                                id = currentClassId
                             )
                         )
                         for(exam: Exam in exams.value) {
@@ -182,7 +185,7 @@ class AddEditClassViewModel @Inject constructor(
                                     classTime.endTime!!,
                                     firstDay.value,
                                     lastDay.value,
-                                    classTime.location ?: ""
+                                    classTime.location
                                 )
                             }
                         }

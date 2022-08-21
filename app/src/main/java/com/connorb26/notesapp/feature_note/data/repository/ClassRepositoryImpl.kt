@@ -15,8 +15,8 @@ class ClassRepositoryImpl(
         return dao.getClasses()
     }
 
-    override suspend fun getClassByName(name: String): Class? {
-        return dao.getClassByName(name)
+    override suspend fun getClassById(id: Int): Class? {
+        return dao.getClassById(id)
     }
 
     override suspend fun insertClass(classObj: Class) {

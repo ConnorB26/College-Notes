@@ -2,21 +2,16 @@ package com.connorb26.notesapp.feature_note.presentation.add_edit_class
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
-import android.util.Log
 import android.widget.DatePicker
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -24,16 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,8 +31,8 @@ import androidx.navigation.NavController
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.DateHolder
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.*
+import com.connorb26.notesapp.feature_note.presentation.util.CustomBasicTextField
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
-import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 import com.connorb26.notesapp.feature_note.presentation.util.scrollbar
 import com.connorb26.notesapp.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
@@ -50,8 +40,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AddEditClassScreen(
     navController: NavController,
-    viewModel: AddEditClassViewModel = hiltViewModel(),
-    className: String
+    viewModel: AddEditClassViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
@@ -169,12 +158,10 @@ fun AddEditClassScreen(
                         singleLine = true,
                         textStyle = MaterialTheme.typography.h5,
                         borderColor = borderColor,
-                        readOnly = className.isNotBlank(),
-                        readOnlyColor = Color.LightGray,
                         backgroundColor = DarkIshGray,
-                        readOnlyAction = {
-                            viewModel.onEvent(AddEditClassEvent.ShowSnackbarMessage("Class name can't be edited"))
-                        }
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
                     )
                 }
             }

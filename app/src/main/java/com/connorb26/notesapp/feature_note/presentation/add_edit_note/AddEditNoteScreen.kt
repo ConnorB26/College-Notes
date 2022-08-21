@@ -30,7 +30,7 @@ import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
 import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.ColorPickerDialog
-import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.CustomTextField
+import com.connorb26.notesapp.feature_note.presentation.util.CustomTextField
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.ui.theme.DarkGray
 import kotlinx.coroutines.flow.collectLatest

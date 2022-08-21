@@ -9,8 +9,8 @@ interface ClassDao {
     @Query("SELECT * FROM class")
     fun getClasses(): Flow<List<Class>>
 
-    @Query("SELECT * FROM class WHERE name = :name")
-    suspend fun getClassByName(name: String): Class?
+    @Query("SELECT * FROM class WHERE id = :id")
+    suspend fun getClassById(id: Int): Class?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClass(classObj: Class)

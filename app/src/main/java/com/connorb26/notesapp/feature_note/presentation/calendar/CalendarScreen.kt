@@ -73,7 +73,7 @@ fun CalendarScreen(
             Column (
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.secondary)
+                    //.background(MaterialTheme.colors.secondary)
             ) {
                 Spacer(modifier = Modifier.height(1.dp))
                 Row(
@@ -124,7 +124,7 @@ fun CalendarScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    border = BorderStroke(1.dp, MaterialTheme.colors.secondary),
+                    //border = BorderStroke(1.dp, MaterialTheme.colors.secondary),
                     backgroundColor = MaterialTheme.colors.onSurface
                 ) {
                     AndroidView(

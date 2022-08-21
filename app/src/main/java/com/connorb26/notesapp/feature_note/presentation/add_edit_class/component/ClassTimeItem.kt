@@ -25,6 +25,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
 import com.connorb26.notesapp.feature_note.domain.model.TimeHolder.Companion.addHour
+import com.connorb26.notesapp.feature_note.presentation.util.CustomTextField
+import com.connorb26.notesapp.feature_note.presentation.util.NoPaddingAlertDialog
 import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.Gray
 

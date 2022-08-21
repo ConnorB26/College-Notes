@@ -30,6 +30,8 @@ class AddExam {
         }
         val uri: Uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)!!
 
+        Log.d("EXAM", "Added exam id ${uri.lastPathSegment!!.toLong()} to calendar ${getCalendarId(context)}")
+
         return uri.lastPathSegment!!.toLong()
     }
 

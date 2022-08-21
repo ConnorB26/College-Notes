@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ClassRepository {
     fun getClasses(): Flow<List<Class>>
 
-    suspend fun getClassByName(name: String): Class?
+    suspend fun getClassById(id: Int): Class?
 
     suspend fun insertClass(classObj: Class)
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.connorb26.notesapp.feature_note.domain.model.Class
@@ -33,6 +34,10 @@ class ClassesViewModel @Inject constructor(
     private val _state = mutableStateOf(ClassesState())
     val state: State<ClassesState> = _state
 
+    private val _deleteDialog = mutableStateOf(false)
+    val deleteDialog: State<Boolean> = _deleteDialog
+    var deletingClass: Class? = null
+
     private var getClassesJob: Job? = null
 
     init {
@@ -51,6 +56,14 @@ class ClassesViewModel @Inject constructor(
                     }
                     classUseCases.deleteClass(event.classObj)
                 }
+            }
+            is ClassesEvent.DeleteDialogEnable -> {
+                _deleteDialog.value = true
+                deletingClass = event.classObj
+            }
+            is ClassesEvent.DeleteDialogDisable -> {
+                _deleteDialog.value = false
+                deletingClass = null
             }
         }
     }

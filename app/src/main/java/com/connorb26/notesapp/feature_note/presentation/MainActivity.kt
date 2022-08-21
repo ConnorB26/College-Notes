@@ -127,13 +127,13 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(
                             route = Screen.AddEditClassScreen.route +
-                                    "?className={className}",
+                                    "?classId={classId}",
                             arguments = listOf(
                                 navArgument(
-                                    name = "className"
+                                    name = "classId"
                                 ) {
-                                    type = NavType.StringType
-                                    defaultValue = ""
+                                    type = NavType.IntType
+                                    defaultValue = -1
                                 }
                             ),
                             enterTransition = {
@@ -149,10 +149,8 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         ) {
-                            val name = it.arguments?.getString("className") ?: ""
                             AddEditClassScreen(
-                                navController = navController,
-                                className = name
+                                navController = navController
                             )
                         }
                     }

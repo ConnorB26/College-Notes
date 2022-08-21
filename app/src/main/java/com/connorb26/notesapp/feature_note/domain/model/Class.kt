@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Class(
-    @PrimaryKey val name: String,
+    @PrimaryKey val id: Int? = null,
+    val name: String,
     val classTimes: ClassTimes,
     val exams: Exams,
     val homework: HomeworkList,

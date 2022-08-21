@@ -4,10 +4,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.connorb26.notesapp.feature_note.domain.model.Class
 import com.connorb26.notesapp.feature_note.domain.model.Note
 import com.connorb26.notesapp.feature_note.domain.use_case.notes.NoteUseCases
 import com.connorb26.notesapp.feature_note.domain.util.NoteOrder
 import com.connorb26.notesapp.feature_note.domain.util.OrderType
+import com.connorb26.notesapp.feature_note.presentation.classes.ClassesEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -21,6 +23,10 @@ class NotesViewModel @Inject constructor(
 ): ViewModel() {
     private val _state = mutableStateOf(NotesState())
     val state: State<NotesState> = _state
+
+    private val _deleteDialog = mutableStateOf(false)
+    val deleteDialog: State<Boolean> = _deleteDialog
+    var deletingNote: Note? = null
 
     private var recentlyDeletedNote: Note? = null
 
@@ -56,6 +62,14 @@ class NotesViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
                 )
+            }
+            is NotesEvent.DeleteDialogEnable -> {
+                _deleteDialog.value = true
+                deletingNote = event.note
+            }
+            is NotesEvent.DeleteDialogDisable -> {
+                _deleteDialog.value = false
+                deletingNote = null
             }
         }
     }
