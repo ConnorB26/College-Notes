@@ -86,7 +86,9 @@ object AppModule {
             deleteEvent = DeleteEvent(),
             addExam = AddExam(),
             getEventByID = GetEventByID(),
-            addClassTime = AddClassTime()
+            addClassTime = AddClassTime(),
+            updateExam = UpdateExam(),
+            updateClassTime = UpdateClassTime()
         )
     }
 }

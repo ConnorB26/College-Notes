@@ -81,12 +81,6 @@ class AddEditNoteViewModel @Inject constructor(
                 _noteColor.value = event.color
                 _complementColor.value = VariableColor.getColor(Color(event.color)).toArgb()
             }
-            is AddEditNoteEvent.SaveNoteAndNavigate -> {
-                viewModelScope.launch {
-                    onEvent(AddEditNoteEvent.SaveNote)
-                    _eventFlow.emit(UiEvent.NavigateUp)
-                }
-            }
             is AddEditNoteEvent.Navigate -> {
                 viewModelScope.launch {
                     _eventFlow.emit(UiEvent.NavigateUp)

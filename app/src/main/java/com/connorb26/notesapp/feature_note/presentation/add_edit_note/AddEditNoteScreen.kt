@@ -1,5 +1,6 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -81,10 +82,6 @@ fun AddEditNoteScreen(
                 }
             }
         }
-    }
-
-    BackHandler {
-        viewModel.onEvent(AddEditNoteEvent.SaveNoteAndNavigate)
     }
 
     Scaffold(

@@ -1,12 +1,8 @@
 package com.connorb26.notesapp.feature_note.presentation
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -15,7 +11,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.AddEditClassScreen
@@ -24,7 +19,6 @@ import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
 import com.connorb26.notesapp.feature_note.presentation.classes.ClassesScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
-import com.connorb26.notesapp.ui.theme.Blue
 import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.NotesAppTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost

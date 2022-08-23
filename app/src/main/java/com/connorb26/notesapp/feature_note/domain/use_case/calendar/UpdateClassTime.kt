@@ -1,5 +1,6 @@
 package com.connorb26.notesapp.feature_note.domain.use_case.calendar
 
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -15,12 +16,13 @@ import java.time.*
 import java.time.temporal.ChronoUnit
 
 
-class AddClassTime {
-    operator fun invoke(context: Context, classTime: ClassTime, className: String, firstDay: DateHolder, lastDay: DateHolder): Long {
+class UpdateClassTime {
+    operator fun invoke(context: Context, classTime: ClassTime, className: String, firstDay: DateHolder, lastDay: DateHolder) {
         val dayOfWeek = classTime.dayOfWeek
         val location = classTime.location
         val startTime = classTime.startTime!!
         val endTime = classTime.endTime!!
+        val eventId = classTime.eventID
 
         val startTimeInMillis: Long = Calendar.getInstance().run {
             set(firstDay.year, firstDay.month, firstDay.day, startTime.hour, startTime.minute)
@@ -31,19 +33,15 @@ class AddClassTime {
             timeInMillis
         }
 
-        val timeZone: TimeZone = TimeZone.getDefault()
         val values = ContentValues().apply {
             put(CalendarContract.Events.DTSTART, startTimeInMillis)
             put(CalendarContract.Events.DTEND, endTimeInMillis)
             put(CalendarContract.Events.RRULE, getRRule(dayOfWeek, lastDay))
             put(CalendarContract.Events.TITLE, className)
             put(CalendarContract.Events.EVENT_LOCATION, location)
-            put(CalendarContract.Events.CALENDAR_ID, getCalendarId(context))
-            put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.id)
         }
-        val uri: Uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)!!
-
-        return uri.lastPathSegment!!.toLong()
+        val uri: Uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
+        context.contentResolver.update(uri, values, null, null)
     }
 
     private fun getRRule(dayOfWeek: String, lastDay: DateHolder): String {
@@ -64,23 +62,5 @@ class AddClassTime {
             "Saturday" -> "SA"
             else -> "MO"
         }
-    }
-
-    private fun getCalendarId(context: Context): Long {
-        var calId: Long = 0
-        val calendars: Uri = CalendarContract.Calendars.CONTENT_URI
-        val managedCursor: Cursor? = context.contentResolver
-            .query(
-                calendars, arrayOf("_id", "name"), null,
-                null, null
-            )
-        if (managedCursor!!.moveToFirst()) {
-            calId = managedCursor.getLong(
-                managedCursor
-                    .getColumnIndex("_id")
-            )
-        }
-        managedCursor.close()
-        return calId
     }
 }

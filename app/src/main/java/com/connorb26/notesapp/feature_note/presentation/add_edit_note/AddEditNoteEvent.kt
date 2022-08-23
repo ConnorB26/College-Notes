@@ -5,6 +5,5 @@ sealed class AddEditNoteEvent {
     data class EnteredContent(val value: String): AddEditNoteEvent()
     data class ChangeColor(val color: Int): AddEditNoteEvent()
     object SaveNote: AddEditNoteEvent()
-    object SaveNoteAndNavigate: AddEditNoteEvent()
     object Navigate: AddEditNoteEvent()
 }

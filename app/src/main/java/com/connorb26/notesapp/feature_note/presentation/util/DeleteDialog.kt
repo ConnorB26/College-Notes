@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.connorb26.notesapp.ui.theme.ActionBlue
 import com.connorb26.notesapp.ui.theme.Blue
 import com.connorb26.notesapp.ui.theme.DarkGray
 
@@ -47,7 +48,7 @@ fun DeleteDialog(
             ) {
                 Text(
                     text = "Cancel",
-                    color = Blue
+                    color = ActionBlue
                 )
             }
         },
@@ -62,7 +63,7 @@ fun DeleteDialog(
             ) {
                 Text(
                     text = "Confirm",
-                    color = Blue
+                    color = ActionBlue
                 )
             }
         },

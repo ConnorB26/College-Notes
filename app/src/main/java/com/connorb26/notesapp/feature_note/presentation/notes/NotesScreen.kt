@@ -28,6 +28,7 @@ import com.connorb26.notesapp.feature_note.presentation.notes.components.OrderSe
 import com.connorb26.notesapp.feature_note.presentation.util.DeleteDialog
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
+import com.connorb26.notesapp.ui.theme.ActionBlue
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,7 +54,7 @@ fun NotesScreen(
                 withStyle(
                     style = SpanStyle(
                         fontWeight = FontWeight.Bold,
-                        color = VariableColor.setLuminance(Color(viewModel.deletingNote!!.color), 0.4f))
+                        color = VariableColor.clampLuminance(Color(viewModel.deletingNote!!.color)))
                 ) {
                     append(viewModel.deletingNote!!.title)
                 }
@@ -96,7 +97,7 @@ fun NotesScreen(
         snackbarHost = {
             SnackbarHost(it) { data ->
                 Snackbar(
-                    actionColor = Color(0xff00d8db),
+                    actionColor = ActionBlue,
                     snackbarData = data
                 )
             }

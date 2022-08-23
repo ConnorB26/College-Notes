@@ -18,3 +18,5 @@ val Blue2 = Color(0xff678ad6)
 val Green = Color(0xff90C8AC)
 val White = Color.White
 val LightGray = Color(0xffD3D3D3)
+
+val ActionBlue = Color(0xff00d8db)
