@@ -88,7 +88,8 @@ object AppModule {
             getEventByID = GetEventByID(),
             addClassTime = AddClassTime(),
             updateExam = UpdateExam(),
-            updateClassTime = UpdateClassTime()
+            updateClassTime = UpdateClassTime(),
+            getCalendars = GetCalendars()
         )
     }
 }

@@ -12,13 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import com.connorb26.notesapp.ui.theme.LightGray
 
 @Composable
 fun CustomTextField(
-    text: String,
+    text: String = "",
     hint: String = "",
-    labelColor: Color = Color.White,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = true,
@@ -28,7 +29,8 @@ fun CustomTextField(
     selectionColor: Color = LightGray,
     textColor: Color = Color.White,
     readOnly: Boolean = false,
-    readOnlyColor: Color = Color.Gray
+    readOnlyColor: Color = Color.Gray,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     val customTextSelectionColors = TextSelectionColors(
         handleColor = selectionColor,
@@ -61,7 +63,8 @@ fun CustomTextField(
                     disabledIndicatorColor = Color.Transparent
                 ),
                 placeholder = { if(hint.isNotBlank()) Text(text = hint, style = textStyle, color = Color.DarkGray) },
-                leadingIcon = iconComp
+                leadingIcon = iconComp,
+                visualTransformation = visualTransformation
             )
         }
     }

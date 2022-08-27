@@ -19,10 +19,10 @@ sealed class AddEditClassEvent {
     data class EnteredExamTime(val exam: Exam, val value: TimeHolder): AddEditClassEvent()
     data class EnteredColor(val value: Int): AddEditClassEvent()
     data class ShowSnackbarMessage(val value: String): AddEditClassEvent()
+    data class SaveClass(val calID: Long): AddEditClassEvent()
     object AddClassTime: AddEditClassEvent()
     object RemoveClassTime: AddEditClassEvent()
     object AddExam: AddEditClassEvent()
     object RemoveExam: AddEditClassEvent()
-    object SaveClass: AddEditClassEvent()
     object CancelClass: AddEditClassEvent()
 }

@@ -1,6 +1,9 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_class
 
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.icu.util.Calendar
 import android.widget.DatePicker
 import androidx.activity.compose.BackHandler
@@ -29,8 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.connorb26.notesapp.R
+import com.connorb26.notesapp.feature_note.domain.model.CalendarInst
 import com.connorb26.notesapp.feature_note.domain.model.DateHolder
 import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.*
+import com.connorb26.notesapp.feature_note.presentation.util.ColorPickerDialog
 import com.connorb26.notesapp.feature_note.presentation.util.CustomBasicTextField
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.feature_note.presentation.util.scrollbar
@@ -44,6 +49,8 @@ fun AddEditClassScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val context = LocalContext.current
+
+    val sharedPreferences = (LocalContext.current as? Activity)?.getPreferences(Context.MODE_PRIVATE)
 
     val classState = viewModel.classState.value
     val classTimes = viewModel.classTimes.value
@@ -521,7 +528,9 @@ fun AddEditClassScreen(
                         .fillMaxWidth(0.5f)
                         .height(50.dp)
                         .weight(1f)
-                        .clickable { viewModel.onEvent(AddEditClassEvent.SaveClass) },
+                        .clickable { viewModel.onEvent(AddEditClassEvent.SaveClass(
+                            sharedPreferences?.getLong(CalendarInst.selCalPrefName, 1) ?: 1
+                        )) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

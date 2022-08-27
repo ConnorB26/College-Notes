@@ -8,9 +8,12 @@ import android.widget.CalendarView
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,6 +21,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -29,6 +33,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.R
 import com.connorb26.notesapp.feature_note.presentation.calendar.components.EventItem
+import com.connorb26.notesapp.feature_note.presentation.util.scrollbar
+import com.connorb26.notesapp.ui.theme.DarkGray
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
@@ -124,7 +130,6 @@ fun CalendarScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Card(
-                    //border = BorderStroke(1.dp, MaterialTheme.colors.secondary),
                     backgroundColor = MaterialTheme.colors.onSurface
                 ) {
                     AndroidView(
@@ -150,10 +155,26 @@ fun CalendarScreen(
                 Text(text = "Events On $date")
             }
 
+            val listState = rememberLazyListState()
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .then(
+                        if (state.events.size > 4) {
+                            Modifier.scrollbar(
+                                state = listState,
+                                horizontal = false,
+                                knobColor = Color.White,
+                                trackColor = DarkGray,
+                                hiddenAlpha = 0.5f,
+                                padding = 10.dp,
+                                thickness = 8.dp,
+                                xEndOffset = 8.dp
+                            )
+                        }
+                        else Modifier
+                    )
             ) {
                 items(state.events) { event ->
                     EventItem(
@@ -166,10 +187,6 @@ fun CalendarScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-            }
-
-            if(state.events.isEmpty()) {
-                Text(text = "No events for this date")
             }
         }
     }

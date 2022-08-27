@@ -42,12 +42,14 @@ class UpdateClassTime {
         }
         val uri: Uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
         context.contentResolver.update(uri, values, null, null)
+
+        Log.d("RRULE", getRRule(dayOfWeek, lastDay))
     }
 
     private fun getRRule(dayOfWeek: String, lastDay: DateHolder): String {
         return "FREQ=WEEKLY;" +
                 "BYDAY=${getShortenedDay(dayOfWeek)};" +
-                "UNTIL=20${lastDay.year}${if(lastDay.month < 10) "0${lastDay.month}" else lastDay.month}${lastDay.day+1}T000000Z;" +
+                "UNTIL=${lastDay.year}${if(lastDay.month+1 < 10) "0${lastDay.month+1}" else lastDay.month+1}${lastDay.day+1}T000000Z;" +
                 "WKST=${getShortenedDay("Sunday")}"
     }
 

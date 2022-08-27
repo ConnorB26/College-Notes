@@ -1,7 +1,9 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_class
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.compose.runtime.State
@@ -67,7 +69,6 @@ class AddEditClassViewModel @Inject constructor(
                             name = classObj.name,
                             classTimes = classObj.classTimes.classTimes,
                             exams = classObj.exams.exams,
-                            homeworkList = classObj.homework.homework,
                             firstDay = classObj.firstDay,
                             lastDay = classObj.lastDay,
                             color = classObj.color
@@ -146,13 +147,23 @@ class AddEditClassViewModel @Inject constructor(
             is AddEditClassEvent.SaveClass -> {
                 viewModelScope.launch {
                     try {
+                        if(!checkPermission()) {
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = "This app needs permissions to read/write to the calendar"
+                                )
+                            )
+                            return@launch
+                        }
+
                         for(exam: Exam in exams.value) {
                             if(exam.isValid()) {
                                 if(exam.eventID == -1L) {
                                     exam.eventID = calendarUseCases.addExam(
                                         context,
                                         exam,
-                                        classState.value.name
+                                        classState.value.name,
+                                        event.calID
                                     )
                                 }
                                 else {
@@ -172,7 +183,8 @@ class AddEditClassViewModel @Inject constructor(
                                         classTime,
                                         classState.value.name,
                                         firstDay.value,
-                                        lastDay.value
+                                        lastDay.value,
+                                        event.calID
                                     )
                                 }
                                 else {
@@ -203,7 +215,6 @@ class AddEditClassViewModel @Inject constructor(
                                 name = classState.value.name,
                                 classTimes = ClassTimes(classTimes.value),
                                 exams = Exams(exams.value),
-                                homework = HomeworkList(classState.value.homeworkList),
                                 firstDay = firstDay.value,
                                 lastDay = lastDay.value,
                                 color = classState.value.color,
@@ -236,6 +247,15 @@ class AddEditClassViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun checkPermission(): Boolean {
+        val permission1 = Manifest.permission.READ_CALENDAR
+        val res1: Int = context.checkCallingOrSelfPermission(permission1)
+        val permission2 = Manifest.permission.WRITE_CALENDAR
+        val res2: Int = context.checkCallingOrSelfPermission(permission2)
+
+        return res1 == PackageManager.PERMISSION_GRANTED && res2 == PackageManager.PERMISSION_GRANTED
     }
 
     sealed class UiEvent {

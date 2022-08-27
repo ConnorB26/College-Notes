@@ -1,5 +1,7 @@
 package com.connorb26.notesapp.feature_note.domain.model
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.connorb26.notesapp.ui.theme.*

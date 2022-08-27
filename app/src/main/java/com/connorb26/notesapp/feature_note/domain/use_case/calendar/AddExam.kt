@@ -15,7 +15,7 @@ import com.connorb26.notesapp.feature_note.domain.model.TimeHolder
 
 
 class AddExam {
-    operator fun invoke(context: Context, exam: Exam, className: String): Long {
+    operator fun invoke(context: Context, exam: Exam, className: String, calID: Long): Long {
         val name = exam.name
         val date = exam.date!!
         val time = exam.time!!
@@ -30,29 +30,11 @@ class AddExam {
             put(CalendarContract.Events.DTSTART, timeInMillis)
             put(CalendarContract.Events.DTEND, timeInMillis+7200000)
             put(CalendarContract.Events.TITLE, "$className $name")
-            put(CalendarContract.Events.CALENDAR_ID, getCalendarId(context))
+            put(CalendarContract.Events.CALENDAR_ID, calID)
             put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.id)
         }
         val uri: Uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)!!
 
         return uri.lastPathSegment!!.toLong()
-    }
-
-    private fun getCalendarId(context: Context): Long {
-        var calId: Long = 0
-        val calendars: Uri = CalendarContract.Calendars.CONTENT_URI
-        val managedCursor: Cursor? = context.contentResolver
-            .query(
-                calendars, arrayOf("_id", "name"), null,
-                null, null
-            )
-        if (managedCursor!!.moveToFirst()) {
-            calId = managedCursor.getLong(
-                managedCursor
-                    .getColumnIndex("_id")
-            )
-        }
-        managedCursor.close()
-        return calId
     }
 }

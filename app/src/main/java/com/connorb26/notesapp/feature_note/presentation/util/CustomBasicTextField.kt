@@ -41,7 +41,9 @@ fun CustomBasicTextField(
     borderColor: Color = DarkestGray,
     readOnly: Boolean = false,
     readOnlyColor: Color = Color.Gray,
-    readOnlyAction: () -> Unit = { }
+    readOnlyAction: () -> Unit = { },
+    hint: String = "",
+    spacer: Boolean = true
 ) {
     val customTextSelectionColors = TextSelectionColors(
         handleColor = selectionColor,
@@ -80,15 +82,23 @@ fun CustomBasicTextField(
                     autoCorrect = true
                 ),
                 decorationBox = { innerTextField ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(12.dp))
+                    if(spacer) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.width(12.dp))
+                            innerTextField()
+                        }
+                    }
+                    else {
                         innerTextField()
                     }
                 },
                 cursorBrush = SolidColor(selectionColor)
             )
+        }
+        if(text.isBlank()) {
+            Text(text = hint, style = textStyle, color = Color.DarkGray)
         }
     }
 }

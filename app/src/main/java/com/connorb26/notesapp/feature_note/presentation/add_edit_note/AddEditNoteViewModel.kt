@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,9 @@ class AddEditNoteViewModel @Inject constructor(
         hint = "Enter some content"
     ))
     val noteContent: State<NoteTextFieldState> = _noteContent
+
+    private val _noteState = mutableStateOf(AddEditNoteState())
+    val noteState: State<AddEditNoteState> = _noteState
 
     private val _noteColor = mutableStateOf(White.toArgb())
     val noteColor: State<Int> = _noteColor
@@ -80,6 +84,16 @@ class AddEditNoteViewModel @Inject constructor(
             is AddEditNoteEvent.ChangeColor -> {
                 _noteColor.value = event.color
                 _complementColor.value = VariableColor.getColor(Color(event.color)).toArgb()
+            }
+            is AddEditNoteEvent.ToggleColorSection -> {
+                _noteState.value = noteState.value.copy(
+                    colorSectionVisible = !noteState.value.colorSectionVisible
+                )
+            }
+            is AddEditNoteEvent.EnabledDisableColorPicker -> {
+                _noteState.value = noteState.value.copy(
+                    colorPickerVisible = event.value
+                )
             }
             is AddEditNoteEvent.Navigate -> {
                 viewModelScope.launch {

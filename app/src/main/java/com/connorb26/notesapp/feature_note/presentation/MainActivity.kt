@@ -1,6 +1,7 @@
 package com.connorb26.notesapp.feature_note.presentation
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,6 +19,7 @@ import com.connorb26.notesapp.feature_note.presentation.add_edit_note.AddEditNot
 import com.connorb26.notesapp.feature_note.presentation.calendar.CalendarScreen
 import com.connorb26.notesapp.feature_note.presentation.classes.ClassesScreen
 import com.connorb26.notesapp.feature_note.presentation.notes.NotesScreen
+import com.connorb26.notesapp.feature_note.presentation.util.LockScreenOrientation
 import com.connorb26.notesapp.feature_note.presentation.util.Screen
 import com.connorb26.notesapp.ui.theme.DarkGray
 import com.connorb26.notesapp.ui.theme.NotesAppTheme
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
         window.navigationBarColor = DarkGray.toArgb()
         window.statusBarColor = DarkGray.toArgb()
         setContent {
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
             NotesAppTheme {
                 Surface(
                     color = MaterialTheme.colors.background

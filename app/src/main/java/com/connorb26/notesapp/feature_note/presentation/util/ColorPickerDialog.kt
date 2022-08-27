@@ -1,4 +1,4 @@
-package com.connorb26.notesapp.feature_note.presentation.add_edit_class.component
+package com.connorb26.notesapp.feature_note.presentation.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

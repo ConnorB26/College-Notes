@@ -1,7 +1,5 @@
 package com.connorb26.notesapp.feature_note.presentation.add_edit_note
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -29,10 +27,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.connorb26.notesapp.feature_note.domain.model.Note
-import com.connorb26.notesapp.feature_note.presentation.util.VariableColor
-import com.connorb26.notesapp.feature_note.presentation.add_edit_class.component.ColorPickerDialog
-import com.connorb26.notesapp.feature_note.presentation.util.CustomTextField
-import com.connorb26.notesapp.feature_note.presentation.util.Screen
+import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.BULLET_CHAR
+import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.BULLET_NEWLINE_REGEX
+import com.connorb26.notesapp.feature_note.presentation.add_edit_note.components.BULLET_START_REGEX
+import com.connorb26.notesapp.feature_note.presentation.util.*
 import com.connorb26.notesapp.ui.theme.DarkGray
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,12 +43,12 @@ fun AddEditNoteScreen(
 ) {
     val titleState = viewModel.noteTitle.value
     val contentState = viewModel.noteContent.value
+    val colorSectionEnabled = viewModel.noteState.value.colorSectionVisible
+    val colorPickerEnabled = viewModel.noteState.value.colorPickerVisible
 
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
-    val colorSection = remember { mutableStateOf(false) }
-    val colorPickerEnabled = remember { mutableStateOf(false) }
     val complementColor = viewModel.complementColor
     val defaultColor = rememberSaveable { mutableStateOf(noteColor) }
 
@@ -102,7 +100,7 @@ fun AddEditNoteScreen(
                     onClick = {
                         viewModel.onEvent(AddEditNoteEvent.Navigate)
                     },
-                    modifier = Modifier.offset((-15).dp)
+                    modifier = Modifier.offset((-12).dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
@@ -111,7 +109,8 @@ fun AddEditNoteScreen(
                         modifier = Modifier.size(30.dp)
                     )
                 }
-                CustomTextField(
+
+                CustomBasicTextField(
                     text = titleState.text,
                     hint = titleState.hint,
                     onValueChange = {
@@ -121,12 +120,14 @@ fun AddEditNoteScreen(
                     textStyle = MaterialTheme.typography.h5,
                     modifier = Modifier.fillMaxWidth(0.8f),
                     selectionColor = Color(complementColor.value),
-                    textColor = Color(complementColor.value)
+                    textColor = Color(complementColor.value),
+                    borderColor = Color.Transparent,
+                    spacer = false
                 )
 
                 IconButton(
                     onClick = {
-                        colorSection.value = !colorSection.value
+                        viewModel.onEvent(AddEditNoteEvent.ToggleColorSection)
                     },
                     modifier = Modifier.offset(5.dp)
                 ) {
@@ -139,7 +140,7 @@ fun AddEditNoteScreen(
                 }
             }
             AnimatedVisibility(
-                visible = colorSection.value,
+                visible = colorSectionEnabled,
                 enter = fadeIn() + slideInVertically(),
                 exit = fadeOut() + slideOutVertically()
             ) {
@@ -207,7 +208,7 @@ fun AddEditNoteScreen(
                                 shape = CircleShape
                             )
                             .clickable {
-                                colorPickerEnabled.value = true
+                                viewModel.onEvent(AddEditNoteEvent.EnabledDisableColorPicker(true))
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -221,11 +222,11 @@ fun AddEditNoteScreen(
                 }
             }
 
-            if(colorPickerEnabled.value) {
+            if(colorPickerEnabled) {
                 ColorPickerDialog(
                     onSave = {
                         val colorInt = it.toArgb()
-                        colorPickerEnabled.value = false
+                        viewModel.onEvent(AddEditNoteEvent.EnabledDisableColorPicker(false))
                         defaultColor.value = colorInt
                         scope.launch {
                             noteBackgroundAnimate.animateTo(
@@ -237,7 +238,7 @@ fun AddEditNoteScreen(
                         }
                         viewModel.onEvent(AddEditNoteEvent.ChangeColor(colorInt))
                     },
-                    onDismiss = { colorPickerEnabled.value = false }
+                    onDismiss = { viewModel.onEvent(AddEditNoteEvent.EnabledDisableColorPicker(false)) }
                 )
             }
 
@@ -245,13 +246,15 @@ fun AddEditNoteScreen(
                 text = contentState.text,
                 hint = contentState.hint,
                 onValueChange = {
-                    viewModel.onEvent(AddEditNoteEvent.EnteredContent(it))
+                    viewModel.onEvent(AddEditNoteEvent.EnteredContent(it
+                        .replace(BULLET_NEWLINE_REGEX, "\n$BULLET_CHAR\t\t")
+                        .replace(BULLET_START_REGEX, "$BULLET_CHAR\t\t")))
                 },
                 singleLine = false,
                 textStyle = MaterialTheme.typography.body1,
                 modifier = Modifier.fillMaxHeight(),
                 selectionColor = VariableColor.getColor(Color(viewModel.noteColor.value)),
-                textColor = VariableColor.getColor(Color(viewModel.noteColor.value))
+                textColor = VariableColor.getColor(Color(viewModel.noteColor.value)),
             )
         }
     }

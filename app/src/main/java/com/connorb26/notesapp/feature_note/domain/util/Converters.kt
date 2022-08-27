@@ -26,16 +26,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun storedStringToHomeworkList(value: String): HomeworkList {
-        return Gson().fromJson(value, HomeworkList::class.java)
-    }
-
-    @TypeConverter
-    fun homeworkListToStoredString(homeworkList: HomeworkList): String {
-        return Gson().toJson(homeworkList)
-    }
-
-    @TypeConverter
     fun storedStringToDateHolder(value: String): DateHolder {
         return Gson().fromJson(value, DateHolder::class.java)
     }

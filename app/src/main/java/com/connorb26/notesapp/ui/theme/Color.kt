@@ -14,7 +14,6 @@ val BabyBlue = Color(0xff81deea)
 val Violet = Color(0xffcf94da)
 val LightGreen = Color(0xffe7ed9b)
 val Blue = Color(0xff6E85B7)
-val Blue2 = Color(0xff678ad6)
 val Green = Color(0xff90C8AC)
 val White = Color.White
 val LightGray = Color(0xffD3D3D3)

@@ -11,5 +11,6 @@ data class CalendarUseCases(
     val addExam: AddExam,
     val addClassTime: AddClassTime,
     val updateExam: UpdateExam,
-    val updateClassTime: UpdateClassTime
+    val updateClassTime: UpdateClassTime,
+    val getCalendars: GetCalendars
 )

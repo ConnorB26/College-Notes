@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 
 
 class AddClassTime {
-    operator fun invoke(context: Context, classTime: ClassTime, className: String, firstDay: DateHolder, lastDay: DateHolder): Long {
+    operator fun invoke(context: Context, classTime: ClassTime, className: String, firstDay: DateHolder, lastDay: DateHolder, calID: Long): Long {
         val dayOfWeek = classTime.dayOfWeek
         val location = classTime.location
         val startTime = classTime.startTime!!
@@ -38,7 +38,7 @@ class AddClassTime {
             put(CalendarContract.Events.RRULE, getRRule(dayOfWeek, lastDay))
             put(CalendarContract.Events.TITLE, className)
             put(CalendarContract.Events.EVENT_LOCATION, location)
-            put(CalendarContract.Events.CALENDAR_ID, getCalendarId(context))
+            put(CalendarContract.Events.CALENDAR_ID, calID)
             put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.id)
         }
         val uri: Uri = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, values)!!
@@ -49,7 +49,7 @@ class AddClassTime {
     private fun getRRule(dayOfWeek: String, lastDay: DateHolder): String {
         return "FREQ=WEEKLY;" +
                 "BYDAY=${getShortenedDay(dayOfWeek)};" +
-                "UNTIL=20${lastDay.year}${if(lastDay.month < 10) "0${lastDay.month}" else lastDay.month}${lastDay.day+1}T000000Z;" +
+                "UNTIL=${lastDay.year}${if(lastDay.month+1 < 10) "0${lastDay.month+1}" else lastDay.month+1}${lastDay.day+1}T000000Z;" +
                 "WKST=${getShortenedDay("Sunday")}"
     }
 
@@ -64,23 +64,5 @@ class AddClassTime {
             "Saturday" -> "SA"
             else -> "MO"
         }
-    }
-
-    private fun getCalendarId(context: Context): Long {
-        var calId: Long = 0
-        val calendars: Uri = CalendarContract.Calendars.CONTENT_URI
-        val managedCursor: Cursor? = context.contentResolver
-            .query(
-                calendars, arrayOf("_id", "name"), null,
-                null, null
-            )
-        if (managedCursor!!.moveToFirst()) {
-            calId = managedCursor.getLong(
-                managedCursor
-                    .getColumnIndex("_id")
-            )
-        }
-        managedCursor.close()
-        return calId
     }
 }

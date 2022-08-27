@@ -9,7 +9,6 @@ data class Class(
     val name: String,
     val classTimes: ClassTimes,
     val exams: Exams,
-    val homework: HomeworkList,
     val firstDay: DateHolder,
     val lastDay: DateHolder,
     val color: Int
