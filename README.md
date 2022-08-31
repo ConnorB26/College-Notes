@@ -9,3 +9,10 @@ Not only was this a project done for practical purposes, it was also done so tha
 * Android Room
 * Software architecture styles (this project uses clean architecture)
 * Software architecture design patterns (this project uses MVVM)
+
+### Issues
+Since Jetpack Compose is a pretty new technology, there isn't as much documentation and tutorials out there, in addition to basic, expected features.
+
+For example, I wanted to have my notes contain a rich text field, but such a thing doesn't exist natively, and there also isn't any good public solutions out there as well. I create a workaround by creating and implementing my own markdown-style language that visually transformed the text based on the tags you write, but later scrapped that in favor of only having bullet point functionality, which was as easy as doing a simple regex search/replace for dashes at the beginning of a newline, replacing them with a bullet point unicode character (although not a perfect solution).
+
+Overall, a lot of solutions and tutorials I found online were for the outdated, xml system, which made it difficult to learn some things with this new technology.
