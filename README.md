@@ -1,4 +1,4 @@
-# College Notes - Android Application
+# [College Notes](https://play.google.com/store/apps/details?id=com.connorb26.notesapp) - Android Application
 
 This project was developed to fill a personal need for an app that combined note taking functionality with the ability to see/edit/add events to the calendar, with extra functionality to input class information and have class times and exams also be added to the calendar. Essentially, this app provides CRUD functionality for notes, classes, and calendar events to manage everything a college student might need, all within a single application instead of separate ones.
 
